@@ -1,0 +1,62 @@
+[tool.poetry]
+name = "example_template"
+version = "1.0.0"
+description = "This is a template example for python packages"
+authors = ["samet <samettaspinarx@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^3.8.4"
+pytest = "^6.1.2"
+pytest-cov = "^2.10.1"
+isort = "^5.6.4"
+ruff = "^0.0.290"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 80
+target-version = ["py38"]
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | \.direnv
+  | _build
+  | build
+  | dist
+  | \.env
+  | \.vscode
+  | \.cache
+  | github
+  | __pycache__
+  | .cloudignore
+)/
+'''
+
+[tool.isort]
+py_version = "38"
+line_length = 80
+lines_after_imports = 2
+lines_between_sections = 1
+multi_line_output = 3
+force_grid_wrap = 0
+include_trailing_comma = "true"
+combine_as_imports = "true"
+use_parentheses = "true"
+skip = ["./docs", ".direnv"]
+skip_glob = ["*/__init__.py"]
+skip_gitignore = "true"
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+default_section = "THIRDPARTY"
+
+[tool.pytest.ini_options]
+minversion = "6.1"
+addopts = "--cov"
+testpaths = [
+    "tests_unit",
+]
