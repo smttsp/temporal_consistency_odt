@@ -20,6 +20,7 @@ And collect more samples which may help improve the model further
 
 Below are some examples:
 
+#### additional/missing objects
 
 #### Different classes
 
@@ -27,6 +28,12 @@ class_i             |  class_j
 :-------------------------:|:-------------------------:
 ![im1](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/07a547cd-b8ad-4cfc-8c63-da80db762320) |  ![im2](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/9e62f950-2702-460f-852d-f5e82893e99c)
 
+
+#### Low iou
+
+frame_i             |  frame_(i+1)
+:-------------------------:|:-------------------------:
+![im1](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/8fd14598-5b28-429b-8b25-d030ad619284) |  ![im2](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/120fc6c3-738a-4ac6-957f-51d73495b39a)
 
 
 ## References
