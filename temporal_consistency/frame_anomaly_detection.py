@@ -67,7 +67,7 @@ class FrameInfoList:
         but exists in the other two. Or middle one contains on object
         that is not in the other ones.
         """
-        pass
+
         prev_ids, mid_ids, next_ids = [
             lst.object_ids for lst in self.frame_info_list
         ]
