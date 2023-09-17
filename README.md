@@ -1,10 +1,12 @@
 # Temporal Video Consistency
-**Data collection through temporal consistency of a video: ** 
-This repo uses of object detection and tracking methods and finds failures in a video, i.e., when
+**Data collection through temporal consistency of a video:** 
+This repo uses object detection and tracking methods and finds failures in a video, i.e., when
 
-- some objects are missed in a frame that existed in the previous and next frames
-- some extra objects found in a frame that weren't predicted in the previous and next frames 
+- additional or missing frame
+  - some objects are missed in a frame that existed in the previous and next frames
+  - some extra objects found in a frame that weren't predicted in the previous and next frames 
 - when an object is predicted as a different class than the previous one
+- low_iou of an object in a frame and its previous frame
 
 This repo uses the above heuristics and finds failures on video frames which 
 will be used in model training. 
