@@ -60,3 +60,35 @@ class FrameInfoList:
 
         return extra_elements_in_mid or missing_elements_in_mid
 
+    def check_incorrect_object_classification(self):
+        """The classes of each object should be consistent. If an object is classified
+        as a member of class_i, then class_j, this inconsistency shows there is a
+        discrepancy in classifications which is a good indicator that the frame
+        should be logged
+        """
+        prev, mid, next = self.frame_info_list
+
+        # Extract data from the trackers
+        prev_data = extract_track_data(prev.tracker)
+        mid_data = extract_track_data(mid.tracker)
+        next_data = extract_track_data(next.tracker)
+
+        # Find common track_ids between the trackers
+        common_track_ids = (
+            set(prev_data.keys()) & set(mid_data.keys()) & set(next_data.keys())
+        )
+
+        # Identify mismatches in mid-tracker
+        mismatched_tracks = {}
+        for track_id in common_track_ids:
+            if (
+                mid_data[track_id] != prev_data[track_id]
+                or mid_data[track_id] != next_data[track_id]
+            ):
+                mismatched_tracks[track_id] = mid_data[track_id]
+
+        # print("Mismatched tracks in mid:", mismatched_tracks)
+        return len(mismatched_tracks) > 0
+
+    def is_low_iou(self):
+        pass
