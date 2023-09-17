@@ -105,13 +105,11 @@ def object_detection_and_tracking(model, video_filepath):
     video_cap.release()
     writer.release()
     cv2.destroyAllWindows()
-    return tracker_list
+    return None
 
 
 if __name__ == "__main__":
     model = YOLO("yolov8n.pt")
 
-    tracker_list = object_detection_and_tracking(
-        model, video_filepath="video1.mp4"
-    )
+    object_detection_and_tracking(model, video_filepath="video1.mp4")
     print()
