@@ -4,33 +4,11 @@ import datetime
 from ultralytics import YOLO
 import cv2
 from helper import create_video_writer
-from deep_sort_realtime.deepsort_tracker import DeepSort
-
-CONFIDENCE_THRESHOLD = 0.7
+from deep_sort_realtime.deepsort_tracker import DeepSort, Tracker
+from frame_anomaly_detection import FrameInfoList, FrameInfo
 from vis_utils import draw_bbox_around_object
 
-
-class FrameInfo:
-    def __init__(self, frame, tracker):
-        self.tracker = tracker
-        self.frame = frame
-
-
-class FrameInfoList:
-    def __init__(self):
-        self.frame_info_list = []
-
-    def add_frame_info(self, frame_info):
-        self.frame_info_list.append(frame_info)
-
-        size = len(self.frame_info_list)
-        if size > 3:
-            self.frame_info_list.pop(0)
-        if size == 3:
-            self.evaluate_middle_frame()
-
-    def evaluate_middle_frame(self):
-        pass
+CONFIDENCE_THRESHOLD = 0.5
 
 
 def object_detection(model, frame):
@@ -58,11 +36,12 @@ def object_detection(model, frame):
     return results
 
 
-def object_tracking(frame, results, tracker):
-    print(tracker)
+def object_tracking(frame, results, deep_sort_tracker, classes):
+    # print(tracker)
     # update the tracker with the new detections
-    tracks = tracker.update_tracks(results, frame=frame)
-    # loop over the tracks
+    tracks = deep_sort_tracker.update_tracks(results, frame=frame)
+
+    frame_after = frame.copy()
     for track in tracks:
         # if the track is not confirmed, ignore it
         if not track.is_confirmed():
@@ -70,8 +49,8 @@ def object_tracking(frame, results, tracker):
 
         # get the track id and the bounding box
         voc_bbox = track.to_ltrb()
-        draw_bbox_around_object(frame, track, voc_bbox)
-    return frame
+        draw_bbox_around_object(frame_after, track, voc_bbox, classes)
+    return frame_after
 
 
 def object_detection_and_tracking(model, video_filepath):
@@ -83,8 +62,9 @@ def object_detection_and_tracking(model, video_filepath):
     writer = create_video_writer(video_cap, output_filepath)
 
     # load the pre-trained YOLOv8n model
-    tracker = DeepSort(max_age=50)
-    tracker_list: list[DeepSort] = []
+    deep_sort_tracker = DeepSort(max_age=50)
+    frame_info_list = FrameInfoList()
+
     while True:
         start = datetime.datetime.now()
 
@@ -94,8 +74,12 @@ def object_detection_and_tracking(model, video_filepath):
             break
 
         results = object_detection(model, frame)
-        frame = object_tracking(frame, results, tracker)
-        tracker_list.append(copy.deepcopy(tracker))
+        frame_after = object_tracking(
+            frame, results, deep_sort_tracker, classes=model.names
+        )
+        frame_info = FrameInfo(frame, deep_sort_tracker.tracker)
+        frame_info_list.add_frame_info(frame_info)
+
         end = datetime.datetime.now()
 
         total = (end - start).total_seconds() * 1000
@@ -104,11 +88,17 @@ def object_detection_and_tracking(model, video_filepath):
         # calculate the frame per second and draw it on the frame
         fps = f"FPS: {1 / (end - start).total_seconds():.2f}"
         cv2.putText(
-            frame, fps, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 8
+            frame_after,
+            fps,
+            (50, 50),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            2,
+            (0, 0, 255),
+            8,
         )
 
-        cv2.imshow("Frame", frame)
-        writer.write(frame)
+        cv2.imshow("Frame", frame_after)
+        writer.write(frame_after)
         if cv2.waitKey(1) == ord("q"):
             break
 
@@ -120,7 +110,8 @@ def object_detection_and_tracking(model, video_filepath):
 
 if __name__ == "__main__":
     model = YOLO("yolov8n.pt")
+
     tracker_list = object_detection_and_tracking(
-        model, video_filepath="video2.mp4"
+        model, video_filepath="video1.mp4"
     )
     print()
