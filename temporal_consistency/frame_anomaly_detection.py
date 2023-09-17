@@ -1,9 +1,45 @@
 import copy
+import sys
+from collections import defaultdict
+
+MIN_IOU_THRESH = 0.5
+EPS = sys.float_info.epsilon
 
 
-# Extract track_id and det_class from each tracker
 def extract_track_data(tracker):
+    """Extract track_id and det_class from each tracker"""
     return {track.track_id: track.det_class for track in tracker.tracks}
+
+
+def compute_iou(bbox1, bbox2):
+    # Determine the coordinates of the intersection rectangle
+    xA = max(bbox1[0], bbox2[0])
+    yA = max(bbox1[1], bbox2[1])
+    xB = min(bbox1[2], bbox2[2])
+    yB = min(bbox1[3], bbox2[3])
+
+    # Compute the area of the intersection rectangle
+    inter_area = max(0, xB - xA + 1) * max(0, yB - yA + 1)
+
+    # Compute the area of both bounding boxes
+    box1_area = (bbox1[2] - bbox1[0] + 1) * (bbox1[3] - bbox1[1] + 1)
+    box2_area = (bbox2[2] - bbox2[0] + 1) * (bbox2[3] - bbox2[1] + 1)
+
+    # Compute the IoU
+    iou = inter_area / float(box1_area + box2_area - inter_area + EPS)
+
+    return iou
+
+
+def extract_object_pairs(tracker1, tracker2):
+    bbox_dict = defaultdict(list)
+    for track in tracker1.tracks:
+        bbox_dict[track.track_id].append(track.to_ltrb())
+
+    for track in tracker2.tracks:
+        bbox_dict[track.track_id].append(track.to_ltrb())
+
+    return bbox_dict
 
 
 class FrameInfo:
@@ -40,6 +76,7 @@ class FrameInfoList:
         return (
             self.check_if_missing_or_extra_object()
             or self.check_incorrect_object_classification()
+            or self.is_low_iou()
         )
 
     def check_if_missing_or_extra_object(self):
@@ -58,7 +95,11 @@ class FrameInfoList:
         # Find elements that are in both prev_ids and next_ids but not in mid_ids
         missing_elements_in_mid = (prev_ids.intersection(next_ids)) - mid_ids
 
-        return extra_elements_in_mid or missing_elements_in_mid
+        anomaly_elem = extra_elements_in_mid or missing_elements_in_mid
+        if anomaly_elem:
+            print(f"There is missing or extra elements: {anomaly_elem}")
+
+        return anomaly_elem
 
     def check_incorrect_object_classification(self):
         """The classes of each object should be consistent. If an object is classified
@@ -86,9 +127,17 @@ class FrameInfoList:
                 or mid_data[track_id] != next_data[track_id]
             ):
                 mismatched_tracks[track_id] = mid_data[track_id]
-
-        # print("Mismatched tracks in mid:", mismatched_tracks)
+                print("Mismatched tracks in mid:", mismatched_tracks)
         return len(mismatched_tracks) > 0
 
     def is_low_iou(self):
-        pass
+        prev, mid = self.frame_info_list[:2]
+        bbox_dict = extract_object_pairs(prev.tracker, mid.tracker)
+
+        for track_id, pair in bbox_dict.items():
+            if len(pair) == 2:
+                iou = compute_iou(pair[0], pair[1])
+                if iou < MIN_IOU_THRESH:
+                    print(f"{iou=} is lower than threshold of {MIN_IOU_THRESH}")
+                    return True
+        return False
