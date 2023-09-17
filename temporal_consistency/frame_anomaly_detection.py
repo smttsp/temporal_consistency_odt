@@ -2,6 +2,8 @@ import copy
 import sys
 from collections import defaultdict
 
+from utils import compute_iou
+
 
 MIN_IOU_THRESH = 0.5
 EPS = sys.float_info.epsilon
@@ -10,26 +12,6 @@ EPS = sys.float_info.epsilon
 def extract_track_data(tracker):
     """Extract track_id and det_class from each tracker"""
     return {track.track_id: track.det_class for track in tracker.tracks}
-
-
-def compute_iou(bbox1, bbox2):
-    # Determine the coordinates of the intersection rectangle
-    xA = max(bbox1[0], bbox2[0])
-    yA = max(bbox1[1], bbox2[1])
-    xB = min(bbox1[2], bbox2[2])
-    yB = min(bbox1[3], bbox2[3])
-
-    # Compute the area of the intersection rectangle
-    inter_area = max(0, xB - xA + 1) * max(0, yB - yA + 1)
-
-    # Compute the area of both bounding boxes
-    box1_area = (bbox1[2] - bbox1[0] + 1) * (bbox1[3] - bbox1[1] + 1)
-    box2_area = (bbox2[2] - bbox2[0] + 1) * (bbox2[3] - bbox2[1] + 1)
-
-    # Compute the IoU
-    iou = inter_area / float(box1_area + box2_area - inter_area + EPS)
-
-    return iou
 
 
 def extract_object_pairs(tracker1, tracker2):
