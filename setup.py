@@ -8,7 +8,7 @@ from distutils.core import setup
 
 
 setup(
-    name="example_template",
+    name="temporal_consistency",
     version="1.0.1",
-    packages=["example_template"],
+    packages=["temporal_consistency"],
 )
