@@ -5,11 +5,9 @@ from helper import create_video_writer
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
 
-CONFIDENCE_THRESHOLD = 0.8
+CONFIDENCE_THRESHOLD = 0.7
 GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
-
-model = YOLO("yolov8n.pt")
 
 
 def object_detection(model, frame):
@@ -18,10 +16,6 @@ def object_detection(model, frame):
 
     # initialize the list of bounding boxes and confidences
     results = []
-
-    ######################################
-    # DETECTION
-    ######################################
 
     # loop over the detections
     for data in detections.boxes.data.tolist():
@@ -50,10 +44,7 @@ def object_detection(model, frame):
 
 
 def object_tracking(frame, results, tracker):
-    ######################################
-    # TRACKING
-    ######################################
-
+    print(tracker)
     # update the tracker with the new detections
     tracks = tracker.update_tracks(results, frame=frame)
     # loop over the tracks
@@ -87,10 +78,7 @@ def object_tracking(frame, results, tracker):
     return frame
 
 
-def object_detection_and_tracking(
-    model,
-    video_filepath="video2.mp4",
-):
+def object_detection_and_tracking(model, video_filepath):
     # initialize the video capture object
     video_cap = cv2.VideoCapture(video_filepath)
     output_filepath = video_filepath.replace(".mp4", "_output.mp4")
@@ -132,3 +120,8 @@ def object_detection_and_tracking(
     video_cap.release()
     writer.release()
     cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    model = YOLO("yolov8n.pt")
+    object_detection_and_tracking(model, video_filepath="video2.mp4")
