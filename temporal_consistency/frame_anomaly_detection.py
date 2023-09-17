@@ -2,6 +2,7 @@ import copy
 import sys
 from collections import defaultdict
 
+
 MIN_IOU_THRESH = 0.5
 EPS = sys.float_info.epsilon
 

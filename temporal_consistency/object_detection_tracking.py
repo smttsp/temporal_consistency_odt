@@ -1,12 +1,12 @@
-import copy
 import datetime
 
-from ultralytics import YOLO
 import cv2
+from deep_sort_realtime.deepsort_tracker import DeepSort
+from frame_anomaly_detection import FrameInfo, FrameInfoList
 from helper import create_video_writer
-from deep_sort_realtime.deepsort_tracker import DeepSort, Tracker
-from frame_anomaly_detection import FrameInfoList, FrameInfo
+from ultralytics import YOLO
 from vis_utils import draw_bbox_around_object
+
 
 CONFIDENCE_THRESHOLD = 0.5
 

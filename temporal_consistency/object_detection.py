@@ -1,7 +1,8 @@
 import datetime
-from ultralytics import YOLO
+
 import cv2
 from helper import create_video_writer
+from ultralytics import YOLO
 
 
 # define some constants
@@ -35,15 +36,20 @@ while True:
         # extract the confidence (i.e., probability) associated with the detection
         confidence = data[4]
 
-        # filter out weak detections by ensuring the 
+        # filter out weak detections by ensuring the
         # confidence is greater than the minimum confidence
         if float(confidence) < CONFIDENCE_THRESHOLD:
             continue
 
         # if the confidence is greater than the minimum confidence,
         # draw the bounding box on the frame
-        xmin, ymin, xmax, ymax = int(data[0]), int(data[1]), int(data[2]), int(data[3])
-        cv2.rectangle(frame, (xmin, ymin) , (xmax, ymax), GREEN, 2)
+        xmin, ymin, xmax, ymax = (
+            int(data[0]),
+            int(data[1]),
+            int(data[2]),
+            int(data[3]),
+        )
+        cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), GREEN, 2)
 
     # end time to compute the fps
     end = datetime.datetime.now()
@@ -53,8 +59,9 @@ while True:
 
     # calculate the frame per second and draw it on the frame
     fps = f"FPS: {1 / total:.2f}"
-    cv2.putText(frame, fps, (50, 50),
-                cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 8)
+    cv2.putText(
+        frame, fps, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 8
+    )
 
     # show the frame to our screen
     cv2.imshow("Frame", frame)
