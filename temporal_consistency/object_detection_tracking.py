@@ -7,8 +7,7 @@ from helper import create_video_writer
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
 CONFIDENCE_THRESHOLD = 0.7
-GREEN = (0, 255, 0)
-WHITE = (255, 255, 255)
+from vis_utils import draw_bbox_around_object
 
 
 class FrameInfo:
@@ -23,9 +22,12 @@ class FrameInfoList:
 
     def add_frame_info(self, frame_info):
         self.frame_info_list.append(frame_info)
-        if len(self.frame_info_list) > 3:
+
+        size = len(self.frame_info_list)
+        if size > 3:
             self.frame_info_list.pop(0)
-        self.evaluate_middle_frame()
+        if size == 3:
+            self.evaluate_middle_frame()
 
     def evaluate_middle_frame(self):
         pass
@@ -54,30 +56,6 @@ def object_detection(model, frame):
             [[x_min, y_min, x_max - x_min, y_max - y_min], confidence, class_id]
         )
     return results
-
-
-def draw_bbox_around_object(frame, track, voc_bbox):
-    track_id = track.track_id
-
-    x_min, y_min, x_max, y_max = (
-        int(voc_bbox[0]),
-        int(voc_bbox[1]),
-        int(voc_bbox[2]),
-        int(voc_bbox[3]),
-    )
-    # draw the bounding box and the track id
-    cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), GREEN, 2)
-    cv2.rectangle(frame, (x_min, y_min - 20), (x_min + 20, y_min), GREEN, -1)
-    cv2.putText(
-        frame,
-        str(track_id),
-        (x_min + 5, y_min - 8),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.5,
-        WHITE,
-        2,
-    )
-    return None
 
 
 def object_tracking(frame, results, tracker):
