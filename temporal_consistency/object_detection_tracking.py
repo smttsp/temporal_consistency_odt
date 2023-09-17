@@ -11,6 +11,26 @@ GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
 
 
+class FrameInfo:
+    def __init__(self, frame, tracker):
+        self.tracker = tracker
+        self.frame = frame
+
+
+class FrameInfoList:
+    def __init__(self):
+        self.frame_info_list = []
+
+    def add_frame_info(self, frame_info):
+        self.frame_info_list.append(frame_info)
+        if len(self.frame_info_list) > 3:
+            self.frame_info_list.pop(0)
+        self.evaluate_middle_frame()
+
+    def evaluate_middle_frame(self):
+        pass
+
+
 def object_detection(model, frame):
     detections = model(frame)[0]
 
