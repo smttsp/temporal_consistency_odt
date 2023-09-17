@@ -29,11 +29,11 @@ def compute_iou(bbox1, bbox2):
     yB = min(bbox1[3], bbox2[3])
 
     # Compute the area of the intersection rectangle
-    inter_area = max(0, xB - xA + 1) * max(0, yB - yA + 1)
+    inter_area = max(0, xB - xA) * max(0, yB - yA)
 
     # Compute the area of both bounding boxes
-    box1_area = (bbox1[2] - bbox1[0] + 1) * (bbox1[3] - bbox1[1] + 1)
-    box2_area = (bbox2[2] - bbox2[0] + 1) * (bbox2[3] - bbox2[1] + 1)
+    box1_area = (bbox1[2] - bbox1[0]) * (bbox1[3] - bbox1[1])
+    box2_area = (bbox2[2] - bbox2[0]) * (bbox2[3] - bbox2[1])
 
     # Compute the IoU
     iou = inter_area / float(box1_area + box2_area - inter_area + EPS)

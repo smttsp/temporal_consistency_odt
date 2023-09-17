@@ -3,7 +3,7 @@ import datetime
 import cv2
 from deep_sort_realtime.deepsort_tracker import DeepSort
 from frame_anomaly_detection import FrameInfo, FrameInfoList
-from helper import create_video_writer
+from utils import create_video_writer
 from ultralytics import YOLO
 from vis_utils import draw_bbox_around_object
 
@@ -111,5 +111,5 @@ def object_detection_and_tracking(model, video_filepath):
 if __name__ == "__main__":
     model = YOLO("yolov8n.pt")
 
-    object_detection_and_tracking(model, video_filepath="video1.mp4")
+    object_detection_and_tracking(model, video_filepath="data/video1.mp4")
     print()
