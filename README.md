@@ -8,7 +8,7 @@ This repo uses object detection and tracking methods and finds failures in a vid
 - when an object is predicted as a different class than the previous one
 - low_iou of an object in a frame and its previous frame
 
-This repo uses the above heuristics and finds failures on video frames which 
+This repo uses the above heuristics and finds failures in video frames which 
 will be used in model training. 
 
 Moreover, this repo allows users to choose random augmentations to be applied on
@@ -30,6 +30,8 @@ class_i             |  class_j
 
 
 #### Low iou
+
+Below is an example of low_iou (in fact, object_3 is switched to another car). Hence the iou=0.0
 
 frame_i             |  frame_(i+1)
 :-------------------------:|:-------------------------:
