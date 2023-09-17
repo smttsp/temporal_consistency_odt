@@ -36,10 +36,6 @@ Below is an example of low_iou (in fact, object_3 is switched to another car). H
 |:--------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------:|
 | ![im1](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/8fd14598-5b28-429b-8b25-d030ad619284) | ![im2](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/120fc6c3-738a-4ac6-957f-51d73495b39a) |
 
-## References
-
-One of the core pieces of this repo object detection and tracking is obtained from 
-the following article: https://thepythoncode.com/article/real-time-object-tracking-with-yolov8-opencv
 
 ## Installation
 
@@ -91,3 +87,9 @@ pip install --upgrade pip
 pip install poetry
 poetry install
 ```
+
+## References
+
+One of the core pieces of this repo object detection and tracking is obtained from 
+the following article: https://thepythoncode.com/article/real-time-object-tracking-with-yolov8-opencv
+
