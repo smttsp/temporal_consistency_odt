@@ -12,24 +12,16 @@ WHITE = (255, 255, 255)
 
 
 def object_detection(model, frame):
-    # run the YOLO model on the frame
     detections = model(frame)[0]
 
-    # initialize the list of bounding boxes and confidences
     results = []
 
-    # loop over the detections
     for data in detections.boxes.data.tolist():
-        # extract the confidence (i.e., probability) associated with the prediction
         confidence = data[4]
 
-        # filter out weak detections by ensuring the
-        # confidence is greater than the minimum confidence
         if float(confidence) < CONFIDENCE_THRESHOLD:
             continue
 
-        # if the confidence is greater than the minimum confidence,
-        # get the bounding box and the class id
         x_min, y_min, x_max, y_max = (
             int(data[0]),
             int(data[1]),
@@ -107,7 +99,7 @@ def object_detection_and_tracking(model, video_filepath):
         frame = object_tracking(frame, results, tracker)
         tracker_list.append(copy.deepcopy(tracker))
         end = datetime.datetime.now()
-        # show the time it took to process 1 frame
+
         total = (end - start).total_seconds() * 1000
         print(f"Time to process 1 frame: {total:.0f} milliseconds")
 
@@ -117,7 +109,6 @@ def object_detection_and_tracking(model, video_filepath):
             frame, fps, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 8
         )
 
-        # show the frame to our screen
         cv2.imshow("Frame", frame)
         writer.write(frame)
         if cv2.waitKey(1) == ord("q"):
