@@ -2,7 +2,7 @@
 **Data collection through temporal consistency of a video:** 
 This repo uses object detection and tracking methods and finds failures in a video, i.e., when
 
-- additional or missing frame
+- additional or missing object in a frame
   - some objects are missed in a frame that existed in the previous and next frames
   - some extra objects found in a frame that weren't predicted in the previous and next frames 
 - when an object is predicted as a different class than the previous one
@@ -15,6 +15,18 @@ Moreover, this repo allows users to choose random augmentations to be applied on
 all frames, then we will see if the augmentations cause any extra failures. 
 This way, we can further evaluate the robustness of the object detection model (currently `yolo_v8`). 
 And collect more samples which may help improve the model further
+
+### Examples
+
+Below are some examples:
+
+
+#### Different classes
+
+class_i             |  class_j
+:-------------------------:|:-------------------------:
+![im1](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/07a547cd-b8ad-4cfc-8c63-da80db762320) |  ![im2](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/9e62f950-2702-460f-852d-f5e82893e99c)
+
 
 
 ## References
