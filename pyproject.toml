@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "example_template"
+name = "temporal_consistency"
 version = "1.0.0"
 description = "This is a template example for python packages"
 authors = ["samet <samettaspinarx@gmail.com>"]
