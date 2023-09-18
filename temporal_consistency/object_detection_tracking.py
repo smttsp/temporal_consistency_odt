@@ -1,16 +1,14 @@
 import datetime
 
 import cv2
+from augmentations import get_random_augmentation
 from deep_sort_realtime.deepsort_tracker import DeepSort
 from frame_anomaly_detection import FrameInfo, FrameInfoList
 from utils import create_video_writer
 from vis_utils import draw_bbox_around_object
-from augmentations import get_random_augmentation
-
-CONFIDENCE_THRESHOLD = 0.5
 
 
-def object_detection(model, frame, num_aug=0):
+def object_detection(model, frame, num_aug=0, confidence_threshold=0.0):
     frame_aug = get_random_augmentation(frame, num_aug=num_aug)
     detections = model(frame_aug)[0]
 
@@ -19,7 +17,7 @@ def object_detection(model, frame, num_aug=0):
     for data in detections.boxes.data.tolist():
         confidence = data[4]
 
-        if float(confidence) < CONFIDENCE_THRESHOLD:
+        if float(confidence) < confidence_threshold:
             continue
 
         x_min, y_min, x_max, y_max = (
@@ -53,7 +51,7 @@ def object_tracking(frame, results, deep_sort_tracker, classes):
     return frame_after
 
 
-def object_detection_and_tracking(model, video_filepath):
+def object_detection_and_tracking(model, video_filepath, confidence_threshold):
     # initialize the video capture object
     video_cap = cv2.VideoCapture(video_filepath)
     output_filepath = video_filepath.replace(".mp4", "_output.mp4")
@@ -73,7 +71,9 @@ def object_detection_and_tracking(model, video_filepath):
         if not ret:
             break
 
-        results, frame_aug = object_detection(model, frame)
+        results, frame_aug = object_detection(
+            model, frame, confidence_threshold
+        )
         frame_after = object_tracking(
             frame_aug, results, deep_sort_tracker, classes=model.names
         )

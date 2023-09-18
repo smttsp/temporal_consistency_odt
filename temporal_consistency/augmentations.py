@@ -1,23 +1,24 @@
 import random
+
 from albumentations import (
-    Compose,
-    RandomBrightnessContrast,
-    RandomGamma,
-    ColorJitter,
-    ChannelShuffle,
-    RGBShift,
     Blur,
+    ChannelShuffle,
+    ColorJitter,
+    Compose,
+    Equalize,
     GaussNoise,
+    InvertImg,
+    Posterize,
+    RandomBrightnessContrast,
+    RandomFog,
+    RandomGamma,
     RandomRain,
+    RandomShadow,
     RandomSnow,
     RandomSunFlare,
-    RandomFog,
-    RandomShadow,
-    InvertImg,
     RandomToneCurve,
+    RGBShift,
     Solarize,
-    Equalize,
-    Posterize,
 )
 
 
@@ -56,10 +57,4 @@ def get_random_augmentation(image, num_aug=0):
             random.sample(get_aug_list(), k=num_aug)
         )
         image_aug = augmentation_pipeline(image=image)["image"]
-    # plt.subplot(1, 2, 1)
-    # plt.imshow(image)
-    # plt.subplot(1, 2, 2)
-    # plt.imshow(image_aug)
-    # plt.show()
-
     return image_aug

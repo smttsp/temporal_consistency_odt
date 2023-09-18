@@ -1,7 +1,7 @@
 import pytest
 
-import pytest
 from temporal_consistency.utils import compute_iou
+
 
 EPS = 1e-10
 
