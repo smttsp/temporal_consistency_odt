@@ -10,7 +10,7 @@ from augmentations import get_random_augmentation
 CONFIDENCE_THRESHOLD = 0.5
 
 
-def object_detection(model, frame, num_aug=1):
+def object_detection(model, frame, num_aug=0):
     frame_aug = get_random_augmentation(frame, num_aug=num_aug)
     detections = model(frame_aug)[0]
 

@@ -19,7 +19,6 @@ from albumentations import (
     Equalize,
     Posterize,
 )
-import matplotlib.pyplot as plt
 
 
 def get_aug_list():
@@ -50,9 +49,13 @@ def get_aug_list():
     ]
 
 
-def get_random_augmentation(image, num_aug=1):
-    augmentation_pipeline = Compose(random.sample(get_aug_list(), k=num_aug))
-    image_aug = augmentation_pipeline(image=image)["image"]
+def get_random_augmentation(image, num_aug=0):
+    image_aug = image
+    if num_aug > 0:
+        augmentation_pipeline = Compose(
+            random.sample(get_aug_list(), k=num_aug)
+        )
+        image_aug = augmentation_pipeline(image=image)["image"]
     # plt.subplot(1, 2, 1)
     # plt.imshow(image)
     # plt.subplot(1, 2, 2)
