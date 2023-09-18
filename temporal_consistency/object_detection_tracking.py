@@ -108,3 +108,33 @@ def object_detection_and_tracking(
     writer.release()
     cv2.destroyAllWindows()
     return None
+
+
+def process_single_frame(
+    model,
+    video_cap,
+    frame_id,
+    frame_info_list,
+    deep_sort_tracker,
+    num_aug,
+    confidence_threshold,
+):
+    start = datetime.datetime.now()
+
+    ret, frame = video_cap.read()
+    frame_id += 1
+    if not ret:
+        return False, None, 0
+    results, frame_aug = object_detection(
+        model, frame, num_aug, confidence_threshold
+    )
+    frame_after = object_tracking(
+        frame_aug, results, deep_sort_tracker, classes=model.names
+    )
+    frame_info = FrameInfo(frame_id, frame_aug, deep_sort_tracker.tracker)
+    frame_info_list.add_frame_info(frame_info)
+    end = datetime.datetime.now()
+
+    total = (end - start).total_seconds() * 1000
+
+    return True, frame_after, total
