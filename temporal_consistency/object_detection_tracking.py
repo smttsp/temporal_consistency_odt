@@ -51,7 +51,9 @@ def object_tracking(frame, results, deep_sort_tracker, classes):
     return frame_after
 
 
-def object_detection_and_tracking(model, video_filepath, confidence_threshold):
+def object_detection_and_tracking(
+    model, video_filepath, num_aug, confidence_threshold
+):
     # initialize the video capture object
     video_cap = cv2.VideoCapture(video_filepath)
     output_filepath = video_filepath.replace(".mp4", "_output.mp4")
@@ -72,7 +74,7 @@ def object_detection_and_tracking(model, video_filepath, confidence_threshold):
             break
 
         results, frame_aug = object_detection(
-            model, frame, confidence_threshold
+            model, frame, num_aug, confidence_threshold
         )
         frame_after = object_tracking(
             frame_aug, results, deep_sort_tracker, classes=model.names
