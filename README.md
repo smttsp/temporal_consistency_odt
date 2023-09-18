@@ -37,6 +37,12 @@ Below is an example of low_iou (in fact, object_3 is switched to another car). H
 | ![im1](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/8fd14598-5b28-429b-8b25-d030ad619284) | ![im2](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/120fc6c3-738a-4ac6-957f-51d73495b39a) |
 
 
+## TODO
+
+I will integrate the augmentations in the next iteration. Currently, the 
+implementation requires some reviews. I haven't really investigated the code
+nor added any unit-tests. So, I suspect the code might be buggy. 
+
 ## Installation
 
 ### Prerequisite: `pyenv`
