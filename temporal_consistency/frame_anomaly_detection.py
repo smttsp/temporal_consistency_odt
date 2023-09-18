@@ -59,7 +59,7 @@ class FrameInfoList:
         return (
             self.check_if_missing_or_extra_object()
             or self.check_incorrect_object_classification()
-            or self.is_low_iou()
+            # or self.is_low_iou()
         )
 
     def check_if_missing_or_extra_object(self):

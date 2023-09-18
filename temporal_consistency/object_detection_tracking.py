@@ -5,13 +5,14 @@ from deep_sort_realtime.deepsort_tracker import DeepSort
 from frame_anomaly_detection import FrameInfo, FrameInfoList
 from utils import create_video_writer
 from vis_utils import draw_bbox_around_object
-
+from augmentations import get_random_augmentation
 
 CONFIDENCE_THRESHOLD = 0.5
 
 
-def object_detection(model, frame):
-    detections = model(frame)[0]
+def object_detection(model, frame, num_aug=1):
+    frame_aug = get_random_augmentation(frame, num_aug=num_aug)
+    detections = model(frame_aug)[0]
 
     results = []
 
@@ -32,7 +33,7 @@ def object_detection(model, frame):
         results.append(
             [[x_min, y_min, x_max - x_min, y_max - y_min], confidence, class_id]
         )
-    return results
+    return results, frame_aug
 
 
 def object_tracking(frame, results, deep_sort_tracker, classes):
@@ -72,11 +73,11 @@ def object_detection_and_tracking(model, video_filepath):
         if not ret:
             break
 
-        results = object_detection(model, frame)
+        results, frame_aug = object_detection(model, frame)
         frame_after = object_tracking(
-            frame, results, deep_sort_tracker, classes=model.names
+            frame_aug, results, deep_sort_tracker, classes=model.names
         )
-        frame_info = FrameInfo(frame, deep_sort_tracker.tracker)
+        frame_info = FrameInfo(frame_aug, deep_sort_tracker.tracker)
         frame_info_list.add_frame_info(frame_info)
 
         end = datetime.datetime.now()
