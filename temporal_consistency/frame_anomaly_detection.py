@@ -26,7 +26,8 @@ def extract_object_pairs(tracker1, tracker2):
 
 
 class FrameInfo:
-    def __init__(self, frame, tracker):
+    def __init__(self, frame_id, frame, tracker):
+        self.frame_id = frame_id
         self.tracker = copy.deepcopy(tracker)
         self.frame = frame
         self.num_object = len(tracker.tracks)
@@ -40,11 +41,15 @@ class FrameInfoList:
     def __init__(self):
         self.frame_info_list = []
 
-    def add_frame_info(self, frame_info):
-        self.frame_info_list.append(frame_info)
+        # indicates the frames where each object exists
+        self.all_objects = defaultdict(list)
 
-        if len(self.frame_info_list) > 3:
-            self.frame_info_list.pop(0)
+    def add_frame_info(self, frame_info: FrameInfo):
+        self.frame_info_list.append(frame_info)
+        self.update_frame_objects_dict(frame_info)
+
+        # if len(self.frame_info_list) > 3:
+        #     self.frame_info_list.pop(0)
 
         is_abnormal = (
             self.evaluate_middle_frame()
@@ -54,6 +59,10 @@ class FrameInfoList:
         if is_abnormal:
             print()
         return is_abnormal
+
+    def update_frame_objects_dict(self, frame_info):
+        for i in frame_info.object_ids:
+            self.all_objects[i].append(frame_info.frame_id)
 
     def evaluate_middle_frame(self):
         return (

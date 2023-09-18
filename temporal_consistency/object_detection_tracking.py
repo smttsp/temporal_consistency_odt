@@ -1,5 +1,5 @@
 import datetime
-
+import torch
 import cv2
 from augmentations import get_random_augmentation
 from deep_sort_realtime.deepsort_tracker import DeepSort
@@ -10,7 +10,9 @@ from vis_utils import draw_bbox_around_object
 
 def object_detection(model, frame, num_aug=0, confidence_threshold=0.0):
     frame_aug = get_random_augmentation(frame, num_aug=num_aug)
-    detections = model(frame_aug)[0]
+
+    with torch.no_grad():
+        detections = model(frame)[0]
 
     results = []
 
@@ -64,31 +66,25 @@ def object_detection_and_tracking(
     # load the pre-trained YOLOv8n model
     deep_sort_tracker = DeepSort(max_age=50)
     frame_info_list = FrameInfoList()
+    frame_id = 0
 
     while True:
-        start = datetime.datetime.now()
-
-        ret, frame = video_cap.read()
-
-        if not ret:
+        end_of_video, frame_after, total_time = process_single_frame(
+            model,
+            video_cap,
+            frame_id,
+            frame_info_list,
+            deep_sort_tracker,
+            num_aug,
+            confidence_threshold,
+        )
+        if end_of_video:
             break
 
-        results, frame_aug = object_detection(
-            model, frame, num_aug, confidence_threshold
-        )
-        frame_after = object_tracking(
-            frame_aug, results, deep_sort_tracker, classes=model.names
-        )
-        frame_info = FrameInfo(frame_aug, deep_sort_tracker.tracker)
-        frame_info_list.add_frame_info(frame_info)
-
-        end = datetime.datetime.now()
-
-        total = (end - start).total_seconds() * 1000
-        print(f"Time to process 1 frame: {total:.0f} milliseconds")
+        print(f"Time to process 1 frame: {total_time:.0f} milliseconds")
 
         # calculate the frame per second and draw it on the frame
-        fps = f"FPS: {1 / (end - start).total_seconds():.2f}"
+        fps = f"FPS: {1 / total_time.total_seconds():.2f}"
         cv2.putText(
             frame_after,
             fps,
@@ -99,7 +95,7 @@ def object_detection_and_tracking(
             8,
         )
 
-        cv2.imshow("Frame", frame_after)
+        # cv2.imshow("Frame", frame_after)
         writer.write(frame_after)
         if cv2.waitKey(1) == ord("q"):
             break
