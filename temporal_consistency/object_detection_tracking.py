@@ -84,7 +84,7 @@ def object_detection_and_tracking(
         print(f"Time to process 1 frame: {total_time:.0f} milliseconds")
 
         # calculate the frame per second and draw it on the frame
-        fps = f"FPS: {1 / total_time.total_seconds():.2f}"
+        fps = f"FPS: {1000 / total_time:.2f}"
         cv2.putText(
             frame_after,
             fps,
@@ -120,7 +120,7 @@ def process_single_frame(
     ret, frame = video_cap.read()
     frame_id += 1
     if not ret:
-        return False, None, 0
+        return True, None, 0
     results, frame_aug = object_detection(
         model, frame, num_aug, confidence_threshold
     )
@@ -133,4 +133,4 @@ def process_single_frame(
 
     total = (end - start).total_seconds() * 1000
 
-    return True, frame_after, total
+    return False, frame_after, total
