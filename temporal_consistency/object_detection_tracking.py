@@ -106,15 +106,8 @@ def object_detection_and_tracking(
         )
         frame_id += 1
 
-        if end_of_video or frame_id > 100:
+        if end_of_video:
             break
-
-        # if frame_id == 100:
-        #     object_id = "1"
-        #     writer = create_video_writer(video_cap, f"out_vid_{object_id}.mp4")
-        #     frame_info_list.export_object(writer, object_id)
-        #     pass
-        # break
         writer.write(frame_after)
 
     tframe_collection.export_all_objects()
