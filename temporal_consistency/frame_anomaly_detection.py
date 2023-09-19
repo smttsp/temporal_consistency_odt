@@ -1,10 +1,9 @@
-import copy
 import sys
 from collections import defaultdict
 
+from tracked_frame import TrackedFrameCollection
 from utils import compute_iou
-import cv2
-import numpy
+
 
 MIN_IOU_THRESH = 0.5
 EPS = sys.float_info.epsilon
@@ -26,60 +25,9 @@ def extract_object_pairs(tracker1, tracker2):
     return bbox_dict
 
 
-class FrameInfo:
-    def __init__(self, frame_id, frame, tracker):
-        self.frame_id = frame_id
-        self.tracker = copy.deepcopy(tracker)
-        self.frame = frame
-        self.num_object = len(tracker.tracks)
-        self.object_ids = self.get_object_ids()
-
-    def get_object_ids(self):
-        return set(t.track_id for t in self.tracker.tracks)
-
-
-class FrameInfoList:
-    def __init__(self):
-        self.frame_infos = []
-        self.all_objects = defaultdict(dict)
-
-    def add_frame_info(self, frame_info: FrameInfo):
-        self.frame_infos.append(frame_info)
-        self.update_frame_objects_dict(frame_info)
-
-        is_abnormal = False
-        # is_abnormal = (
-        #     self.evaluate_middle_frame()
-        #     if len(self.frame_info_list) == 3
-        #     else False
-        # )
-        # if is_abnormal:
-        #     print()
-        return is_abnormal
-
-    def export_object(self, writer, object_id):
-        a_dict = self.all_objects[str(object_id)]
-
-        start_idx, end_idx = min(a_dict.keys()), max(a_dict.keys())
-
-        for idx in range(start_idx, end_idx + 1):
-            if idx not in a_dict:
-                continue
-            frame = self.frame_infos[idx].frame
-
-            black_frame = numpy.zeros_like(frame)
-            x1, y1, x2, y2 = a_dict[idx]
-            black_frame[y1 : y2 + 1, x1 : x2 + 1] = frame[
-                y1 : y2 + 1, x1 : x2 + 1
-            ]
-            writer.write(black_frame)
-
-        writer.release()
-
-    def update_frame_objects_dict(self, frame_info):
-        for track in frame_info.tracker.tracks:
-            cur_dict = {frame_info.frame_id: list(map(int, track.to_ltrb()))}
-            self.all_objects[track.track_id].update(cur_dict)
+class TemporalAnomalyDetector:
+    def __init__(self, frame_collection: TrackedFrameCollection):
+        self.frame_collection = frame_collection
 
     def evaluate_middle_frame(self):
         return (

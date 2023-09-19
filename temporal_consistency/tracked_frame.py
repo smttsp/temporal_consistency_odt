@@ -1,9 +1,6 @@
 import copy
-import sys
 from collections import defaultdict
 
-from utils import compute_iou
-import cv2
 import numpy
 
 

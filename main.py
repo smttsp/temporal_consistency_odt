@@ -1,11 +1,11 @@
 import argparse
 
+from deep_sort_realtime.deepsort_tracker import DeepSort
 from ultralytics import YOLO
 
 from temporal_consistency.object_detection_tracking import (
     object_detection_and_tracking,
 )
-from deep_sort_realtime.deepsort_tracker import DeepSort
 
 
 CONFIDENCE_THRESHOLD = 0.4
@@ -45,7 +45,7 @@ def parse_args():
 
     # Parsing an integer
     parser.add_argument(
-        "--int_val", type=int, default=0, help="An integer value"
+        "--int_val", type=int, default=2, help="An integer value"
     )
 
     args = parser.parse_args()

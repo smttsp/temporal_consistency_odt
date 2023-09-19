@@ -1,8 +1,9 @@
 import datetime
-import torch
+
 import cv2
+import torch
 from augmentations import get_random_augmentation
-from frame_anomaly_detection import FrameInfo, FrameInfoList
+from frame_anomaly_detection import TrackedFrame, TrackedFrameCollection
 from utils import create_video_writer
 from vis_utils import draw_bbox_around_object, draw_fps_on_frame
 
@@ -60,7 +61,7 @@ def object_detection_and_tracking(
     # initialize the video writer object
     writer = create_video_writer(video_cap, output_filepath)
 
-    frame_info_list = FrameInfoList()
+    tframe_collection = TrackedFrameCollection()
     frame_id = 0
 
     while True:
@@ -68,7 +69,7 @@ def object_detection_and_tracking(
             model,
             video_cap,
             frame_id,
-            frame_info_list,
+            tframe_collection,
             deep_sort_tracker,
             num_aug,
             confidence_threshold,
@@ -78,6 +79,12 @@ def object_detection_and_tracking(
         if end_of_video or frame_id > 200:
             break
 
+        # if frame_id == 100:
+        #     object_id = "1"
+        #     writer = create_video_writer(video_cap, f"out_vid_{object_id}.mp4")
+        #     frame_info_list.export_object(writer, object_id)
+        #     pass
+        # break
         # cv2.imshow("Frame", frame_after)
         writer.write(frame_after)
         # if cv2.waitKey(1) == ord("q"):
@@ -93,7 +100,7 @@ def process_single_frame(
     model,
     video_cap,
     frame_id,
-    frame_info_list,
+    tframe_collection,
     deep_sort_tracker,
     num_aug,
     confidence_threshold,
@@ -109,8 +116,8 @@ def process_single_frame(
     frame_after = object_tracking(
         frame_aug, results, deep_sort_tracker, classes=model.names
     )
-    frame_info = FrameInfo(frame_id, frame_aug, deep_sort_tracker.tracker)
-    frame_info_list.add_frame_info(frame_info)
+    tframe = TrackedFrame(frame_id, frame_aug, deep_sort_tracker.tracker)
+    tframe_collection.add_tracked_frame(tframe)
     end = datetime.datetime.now()
 
     total_time = (end - start).total_seconds() * 1000
