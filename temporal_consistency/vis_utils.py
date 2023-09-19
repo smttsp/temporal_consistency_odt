@@ -6,20 +6,12 @@ BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
 
-def draw_bbox_around_object(frame, track, voc_bbox, classes):
-    track_id = track.track_id
-    cls = track.det_class
-    x_min, y_min, x_max, y_max = (
-        int(voc_bbox[0]),
-        int(voc_bbox[1]),
-        int(voc_bbox[2]),
-        int(voc_bbox[3]),
-    )
+def draw_class_name(frame, ltrb_bbox, track_id, class_name):
+    x_min, y_min, x_max, y_max = map(int, ltrb_bbox)
     # draw the bounding box and the track id
     cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), GREEN, 2)
     cv2.rectangle(frame, (x_min, y_min - 20), (x_min + 60, y_min), GREEN, -1)
-
-    new_text = f"{track_id}: {classes.get(cls)}"
+    new_text = f"{track_id}: {class_name}"
     cv2.putText(
         img=frame,
         text=new_text,
@@ -29,6 +21,14 @@ def draw_bbox_around_object(frame, track, voc_bbox, classes):
         color=WHITE,
         thickness=2,
     )
+    return None
+
+
+def draw_bbox_around_object(frame, track, ltrb_bbox, classes):
+    track_id = track.track_id
+    cls = track.det_class
+    class_name = classes.get(cls)
+    draw_class_name(frame, ltrb_bbox, track_id, class_name)
     return None
 
 
