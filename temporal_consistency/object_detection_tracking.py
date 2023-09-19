@@ -3,7 +3,7 @@ import datetime
 import cv2
 import torch
 from augmentations import get_random_augmentation
-from frame_anomaly_detection import TrackedFrame, TrackedFrameCollection
+from tracked_frame import TrackedFrame, TrackedFrameCollection
 from utils import create_video_writer
 from vis_utils import draw_bbox_around_object, draw_fps_on_frame
 
@@ -28,11 +28,11 @@ def object_detection(model, frame, num_aug=0, confidence_threshold=0.0):
             int(data[2]),
             int(data[3]),
         )
+        ltwh = [x_min, y_min, x_max - x_min, y_max - y_min]
         class_id = int(data[5])
-        # add the bounding box (x, y, w, h), confidence and class id to the results list
-        results.append(
-            [[x_min, y_min, x_max - x_min, y_max - y_min], confidence, class_id]
-        )
+
+        results.append([ltwh, confidence, class_id])
+
     return results, frame_aug
 
 
@@ -45,55 +45,9 @@ def object_tracking(frame, results, deep_sort_tracker, classes):
         if not track.is_confirmed():
             continue
 
-        # get the track id and the bounding box
         voc_bbox = track.to_ltrb()
         draw_bbox_around_object(frame_after, track, voc_bbox, classes)
     return frame_after
-
-
-def object_detection_and_tracking(
-    model, deep_sort_tracker, video_filepath, num_aug, confidence_threshold
-):
-    # initialize the video capture object
-    video_cap = cv2.VideoCapture(video_filepath)
-    output_filepath = video_filepath.replace(".mp4", "_output.mp4")
-
-    # initialize the video writer object
-    writer = create_video_writer(video_cap, output_filepath)
-
-    tframe_collection = TrackedFrameCollection()
-    frame_id = 0
-
-    while True:
-        end_of_video, frame_after, total_time = process_single_frame(
-            model,
-            video_cap,
-            frame_id,
-            tframe_collection,
-            deep_sort_tracker,
-            num_aug,
-            confidence_threshold,
-        )
-        frame_id += 1
-
-        if end_of_video or frame_id > 200:
-            break
-
-        # if frame_id == 100:
-        #     object_id = "1"
-        #     writer = create_video_writer(video_cap, f"out_vid_{object_id}.mp4")
-        #     frame_info_list.export_object(writer, object_id)
-        #     pass
-        # break
-        # cv2.imshow("Frame", frame_after)
-        writer.write(frame_after)
-        # if cv2.waitKey(1) == ord("q"):
-        #     break
-
-    video_cap.release()
-    writer.release()
-    cv2.destroyAllWindows()
-    return None
 
 
 def process_single_frame(
@@ -121,10 +75,46 @@ def process_single_frame(
     end = datetime.datetime.now()
 
     total_time = (end - start).total_seconds() * 1000
-
-    print(f"Time to process 1 frame: {total_time:.0f} milliseconds")
-
-    # calculate the frame per second and draw it on the frame
     draw_fps_on_frame(frame_after, total_time)
 
     return False, frame_after, total_time
+
+
+def object_detection_and_tracking(
+    model, deep_sort_tracker, video_filepath, num_aug, confidence_threshold
+):
+    video_cap = cv2.VideoCapture(video_filepath)
+    output_filepath = video_filepath.replace(".mp4", "_output.mp4")
+
+    writer = create_video_writer(video_cap, output_filepath)
+
+    tframe_collection = TrackedFrameCollection()
+    frame_id = 0
+
+    while True:
+        end_of_video, frame_after, total_time = process_single_frame(
+            model,
+            video_cap,
+            frame_id,
+            tframe_collection,
+            deep_sort_tracker,
+            num_aug,
+            confidence_threshold,
+        )
+        frame_id += 1
+
+        if end_of_video or frame_id > 200:
+            break
+
+        # if frame_id == 100:
+        #     object_id = "1"
+        #     writer = create_video_writer(video_cap, f"out_vid_{object_id}.mp4")
+        #     frame_info_list.export_object(writer, object_id)
+        #     pass
+        # break
+        writer.write(frame_after)
+
+    video_cap.release()
+    writer.release()
+    cv2.destroyAllWindows()
+    return None

@@ -9,6 +9,7 @@ from temporal_consistency.object_detection_tracking import (
 
 
 CONFIDENCE_THRESHOLD = 0.4
+MAX_AGE = 25
 
 
 def parse_args():
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     num_aug = args.num_aug
 
     model = YOLO("yolov8n.pt")
-    deep_sort_tracker = DeepSort(max_age=50)
+    deep_sort_tracker = DeepSort(max_age=MAX_AGE)
 
     object_detection_and_tracking(
         model,
