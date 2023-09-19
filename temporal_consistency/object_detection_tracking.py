@@ -2,10 +2,16 @@ import datetime
 
 import cv2
 import torch
-from augmentations import get_random_augmentation
-from tracked_frame import TrackedFrame, TrackedFrameCollection
-from utils import create_video_writer
-from vis_utils import draw_bbox_around_object, draw_fps_on_frame
+from temporal_consistency.augmentations import get_random_augmentation
+from temporal_consistency.tracked_frame import (
+    TrackedFrame,
+    TrackedFrameCollection,
+)
+from temporal_consistency.utils import create_video_writer
+from temporal_consistency.vis_utils import (
+    draw_bbox_around_object,
+    draw_fps_on_frame,
+)
 
 
 def get_detected_object(data, confidence_threshold):

@@ -3,8 +3,8 @@ import os
 from collections import defaultdict
 
 import numpy
-from utils import create_video_writer
-from vis_utils import put_test_on_upper_corner
+from temporal_consistency.utils import create_video_writer
+from temporal_consistency.vis_utils import put_test_on_upper_corner
 
 
 OUT_FOLDER = "/users/samet/desktop/output/"

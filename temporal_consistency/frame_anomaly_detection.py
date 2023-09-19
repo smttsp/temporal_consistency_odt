@@ -1,8 +1,8 @@
 import sys
 from collections import defaultdict
 
-from tracked_frame import TrackedFrameCollection
-from utils import compute_iou
+from temporal_consistency.tracked_frame import TrackedFrameCollection
+from temporal_consistency.utils import compute_iou
 
 
 MIN_IOU_THRESH = 0.5
