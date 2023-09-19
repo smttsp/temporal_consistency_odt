@@ -10,7 +10,7 @@ def put_test_on_upper_corner(frame, text):
     cv2.putText(
         img=frame,
         text=text,
-        org=(20, 40),
+        org=(20, 60),
         fontFace=cv2.FONT_HERSHEY_SIMPLEX,
         fontScale=0.9,
         color=WHITE,
