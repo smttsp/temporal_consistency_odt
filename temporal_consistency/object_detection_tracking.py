@@ -69,7 +69,7 @@ def process_single_frame(
 
     ret, frame = video_cap.read()
     if not ret:
-        return True, None, 0
+        return True, None
 
     results, frame_aug = object_detection(
         model, frame, num_aug, confidence_threshold
@@ -84,7 +84,7 @@ def process_single_frame(
     total_time = (end - start).total_seconds() * 1000
     draw_fps_on_frame(frame_after, total_time)
 
-    return False, frame_after, total_time
+    return False, frame_after
 
 
 def object_detection_and_tracking(
@@ -101,7 +101,7 @@ def object_detection_and_tracking(
     frame_id = 0
 
     while True:
-        end_of_video, frame_after, total_time = process_single_frame(
+        end_of_video, frame_after = process_single_frame(
             model,
             video_cap,
             frame_id,
@@ -110,11 +110,11 @@ def object_detection_and_tracking(
             num_aug,
             confidence_threshold,
         )
-        frame_id += 1
-
         if end_of_video:
             break
+
         writer.write(frame_after)
+        frame_id += 1
 
     tframe_collection.export_all_objects()
 
