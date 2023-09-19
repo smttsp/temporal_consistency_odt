@@ -2,7 +2,6 @@ import datetime
 import torch
 import cv2
 from augmentations import get_random_augmentation
-from deep_sort_realtime.deepsort_tracker import DeepSort
 from frame_anomaly_detection import FrameInfo, FrameInfoList
 from utils import create_video_writer
 from vis_utils import draw_bbox_around_object, draw_fps_on_frame
@@ -37,13 +36,11 @@ def object_detection(model, frame, num_aug=0, confidence_threshold=0.0):
 
 
 def object_tracking(frame, results, deep_sort_tracker, classes):
-    # print(tracker)
     # update the tracker with the new detections
     tracks = deep_sort_tracker.update_tracks(results, frame=frame)
 
     frame_after = frame.copy()
     for track in tracks:
-        # if the track is not confirmed, ignore it
         if not track.is_confirmed():
             continue
 
@@ -54,7 +51,7 @@ def object_tracking(frame, results, deep_sort_tracker, classes):
 
 
 def object_detection_and_tracking(
-    model, video_filepath, num_aug, confidence_threshold
+    model, deep_sort_tracker, video_filepath, num_aug, confidence_threshold
 ):
     # initialize the video capture object
     video_cap = cv2.VideoCapture(video_filepath)
@@ -63,8 +60,6 @@ def object_detection_and_tracking(
     # initialize the video writer object
     writer = create_video_writer(video_cap, output_filepath)
 
-    # load the pre-trained YOLOv8n model
-    deep_sort_tracker = DeepSort(max_age=50)
     frame_info_list = FrameInfoList()
     frame_id = 0
 
@@ -78,13 +73,15 @@ def object_detection_and_tracking(
             num_aug,
             confidence_threshold,
         )
-        if end_of_video:
+        frame_id += 1
+
+        if end_of_video or frame_id > 200:
             break
 
         # cv2.imshow("Frame", frame_after)
         writer.write(frame_after)
-        if cv2.waitKey(1) == ord("q"):
-            break
+        # if cv2.waitKey(1) == ord("q"):
+        #     break
 
     video_cap.release()
     writer.release()
@@ -104,7 +101,6 @@ def process_single_frame(
     start = datetime.datetime.now()
 
     ret, frame = video_cap.read()
-    frame_id += 1
     if not ret:
         return True, None, 0
     results, frame_aug = object_detection(
