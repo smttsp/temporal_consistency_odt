@@ -191,6 +191,21 @@ files = [
 ]
 
 [[package]]
+name = "configargparse"
+version = "1.7"
+description = "A drop-in replacement for argparse that allows options to also be set via config files and/or environment variables."
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "ConfigArgParse-1.7-py3-none-any.whl", hash = "sha256:d249da6591465c6c26df64a9f73d2536e743be2f244eb3ebe61114af2f94f86b"},
+    {file = "ConfigArgParse-1.7.tar.gz", hash = "sha256:e7067471884de5478c58a511e529f0f9bd1c66bfef1dea90935438d6c23306d1"},
+]
+
+[package.extras]
+test = ["PyYAML", "mock", "pytest"]
+yaml = ["PyYAML"]
+
+[[package]]
 name = "contourpy"
 version = "1.1.0"
 description = "Python library for calculating contours of 2D quadrilateral grids"
@@ -1913,13 +1928,13 @@ files = [
 
 [[package]]
 name = "ultralytics"
-version = "8.0.181"
+version = "8.0.182"
 description = "Ultralytics YOLOv8 for SOTA object detection, multi-object tracking, instance segmentation, pose estimation and image classification."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ultralytics-8.0.181-py3-none-any.whl", hash = "sha256:54e9f8de40a60a0e66108558ed629bdca34a0c30795094068de01445c4bbe706"},
-    {file = "ultralytics-8.0.181.tar.gz", hash = "sha256:845c243ac5cdb3ff24aa5fb8ee2433f37c4dc4155fd22409166ad160841f1ac1"},
+    {file = "ultralytics-8.0.182-py3-none-any.whl", hash = "sha256:18cb5922fbfecba3b55dd132c2602c955b2ec61dab88b58fef6aeb467ff6050f"},
+    {file = "ultralytics-8.0.182.tar.gz", hash = "sha256:bdb7e456f4c55ad2257e7f3cd3dd2ebac606bdcf3df8cc9a1d75dc13287f4155"},
 ]
 
 [package.dependencies]
@@ -1977,4 +1992,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "42815917716c2cdfb8bbf108b97e0b486f578952ed84044b55cd92c9e28c7ead"
+content-hash = "72e29ae969e0ed6d0f5feee70f018b031b87f430368757f5fcd4004324a73610"
