@@ -5,7 +5,7 @@ from augmentations import get_random_augmentation
 from deep_sort_realtime.deepsort_tracker import DeepSort
 from frame_anomaly_detection import FrameInfo, FrameInfoList
 from utils import create_video_writer
-from vis_utils import draw_bbox_around_object
+from vis_utils import draw_bbox_around_object, draw_fps_on_frame
 
 
 def object_detection(model, frame, num_aug=0, confidence_threshold=0.0):
@@ -81,20 +81,6 @@ def object_detection_and_tracking(
         if end_of_video:
             break
 
-        print(f"Time to process 1 frame: {total_time:.0f} milliseconds")
-
-        # calculate the frame per second and draw it on the frame
-        fps = f"FPS: {1000 / total_time:.2f}"
-        cv2.putText(
-            frame_after,
-            fps,
-            (50, 50),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            2,
-            (0, 0, 255),
-            8,
-        )
-
         # cv2.imshow("Frame", frame_after)
         writer.write(frame_after)
         if cv2.waitKey(1) == ord("q"):
@@ -131,6 +117,11 @@ def process_single_frame(
     frame_info_list.add_frame_info(frame_info)
     end = datetime.datetime.now()
 
-    total = (end - start).total_seconds() * 1000
+    total_time = (end - start).total_seconds() * 1000
 
-    return False, frame_after, total
+    print(f"Time to process 1 frame: {total_time:.0f} milliseconds")
+
+    # calculate the frame per second and draw it on the frame
+    draw_fps_on_frame(frame_after, total_time)
+
+    return False, frame_after, total_time
