@@ -3,7 +3,8 @@ import sys
 from collections import defaultdict
 
 from utils import compute_iou
-
+import cv2
+import numpy
 
 MIN_IOU_THRESH = 0.5
 EPS = sys.float_info.epsilon
@@ -39,36 +40,52 @@ class FrameInfo:
 
 class FrameInfoList:
     def __init__(self):
-        self.frame_info_list = []
-
-        # indicates the frames where each object exists
-        self.all_objects = defaultdict(list)
+        self.frame_infos = []
+        self.all_objects = defaultdict(dict)
 
     def add_frame_info(self, frame_info: FrameInfo):
-        self.frame_info_list.append(frame_info)
+        self.frame_infos.append(frame_info)
         self.update_frame_objects_dict(frame_info)
 
-        # if len(self.frame_info_list) > 3:
-        #     self.frame_info_list.pop(0)
-
-        is_abnormal = (
-            self.evaluate_middle_frame()
-            if len(self.frame_info_list) == 3
-            else False
-        )
-        if is_abnormal:
-            print()
+        is_abnormal = False
+        # is_abnormal = (
+        #     self.evaluate_middle_frame()
+        #     if len(self.frame_info_list) == 3
+        #     else False
+        # )
+        # if is_abnormal:
+        #     print()
         return is_abnormal
 
+    def export_object(self, writer, object_id):
+        a_dict = self.all_objects[str(object_id)]
+
+        start_idx, end_idx = min(a_dict.keys()), max(a_dict.keys())
+
+        for idx in range(start_idx, end_idx + 1):
+            if idx not in a_dict:
+                continue
+            frame = self.frame_infos[idx].frame
+
+            black_frame = numpy.zeros_like(frame)
+            x1, y1, x2, y2 = a_dict[idx]
+            black_frame[y1 : y2 + 1, x1 : x2 + 1] = frame[
+                y1 : y2 + 1, x1 : x2 + 1
+            ]
+            writer.write(black_frame)
+
+        writer.release()
+
     def update_frame_objects_dict(self, frame_info):
-        for i in frame_info.object_ids:
-            self.all_objects[i].append(frame_info.frame_id)
+        for track in frame_info.tracker.tracks:
+            cur_dict = {frame_info.frame_id: list(map(int, track.to_ltrb()))}
+            self.all_objects[track.track_id].update(cur_dict)
 
     def evaluate_middle_frame(self):
         return (
             self.check_if_missing_or_extra_object()
             or self.check_incorrect_object_classification()
-            # or self.is_low_iou()
+            or self.is_low_iou()
         )
 
     def check_if_missing_or_extra_object(self):
@@ -78,7 +95,7 @@ class FrameInfoList:
         """
 
         prev_ids, mid_ids, next_ids = [
-            lst.object_ids for lst in self.frame_info_list
+            lst.object_ids for lst in self.frame_infos
         ]
 
         # Find elements in mid_ids that aren't in prev_ids or next_ids
@@ -99,7 +116,7 @@ class FrameInfoList:
         discrepancy in classifications which is a good indicator that the frame
         should be logged
         """
-        prev, mid, next = self.frame_info_list
+        prev, mid, next = self.frame_infos
 
         # Extract data from the trackers
         prev_data = extract_track_data(prev.tracker)
@@ -123,7 +140,7 @@ class FrameInfoList:
         return len(mismatched_tracks) > 0
 
     def is_low_iou(self):
-        prev, mid = self.frame_info_list[:2]
+        prev, mid = self.frame_infos[:2]
         bbox_dict = extract_object_pairs(prev.tracker, mid.tracker)
 
         for track_id, pair in bbox_dict.items():
