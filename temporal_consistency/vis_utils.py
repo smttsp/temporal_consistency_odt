@@ -6,6 +6,18 @@ BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
 
+def put_test_on_upper_corner(frame, text):
+    cv2.putText(
+        img=frame,
+        text=text,
+        org=(20, 40),
+        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+        fontScale=0.9,
+        color=WHITE,
+        thickness=2,
+    )
+
+
 def draw_class_name(frame, ltrb_bbox, track_id, class_name):
     x_min, y_min, x_max, y_max = map(int, ltrb_bbox)
     # draw the bounding box and the track id
