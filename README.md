@@ -1,20 +1,33 @@
 # Temporal Video Consistency
 **Data collection through temporal consistency of a video:** 
-This repo uses object detection and tracking methods and finds failures in a video, i.e., when
 
-- additional or missing object in a frame
-  - some objects are missed in a frame that existed in the previous and next frames
-  - some extra objects found in a frame that weren't predicted in the previous and next frames 
-- when an object is predicted as a different class than the previous one
-- low_iou of an object in a frame and its previous frame
 
-This repo uses the above heuristics and finds failures in video frames which 
-will be used in model training. 
+This repository harnesses object detection and tracking techniques to identify inconsistencies 
+and anomalies in video sequences. Specifically, the system identifies:
 
-Moreover, this repo allows users to choose random augmentations to be applied on
-all frames, then we will see if the augmentations cause any extra failures. 
-This way, we can further evaluate the robustness of the object detection model (currently `yolo_v8`). 
-And collect more samples which may help improve the model further
+**Discrepancies in Object Count**:
+
+   - Frames missing objects that are present in adjacent frames.
+   - Frames with additional objects not found in adjacent frames.
+
+**Class Mismatch**: 
+
+Instances where an object's predicted class differs from its previous frame classification.
+
+**Low IOU**: 
+
+Situations where the intersection-over-union (IOU) of an object between two consecutive frames drops below a threshold, indicating potential tracking issues.
+
+---
+The primary goal of this repo is enhancing model training. 
+As the system captures these anomalies, those failures can then be used to refine the object detection model.
+
+**Augmentation Evaluation**:
+The repository also supports the application of random frame augmentations. 
+By observing how these augmentations affect detection outcomes, users can 
+assess the resilience and robustness of the detection model, specifically `yolo_v8`. 
+This also aids in accumulating diverse samples that can further improve the model's performance.
+
 
 ### Examples
 
