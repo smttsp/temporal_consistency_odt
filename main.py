@@ -44,11 +44,6 @@ def parse_args():
         help="Each frame will go through up to 3 augmentations. 0-> no augmentation",
     )
 
-    # Parsing an integer
-    parser.add_argument(
-        "--int_val", type=int, default=2, help="An integer value"
-    )
-
     args = parser.parse_args()
     return args
 

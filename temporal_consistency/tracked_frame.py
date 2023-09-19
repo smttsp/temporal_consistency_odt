@@ -1,9 +1,11 @@
 import copy
 import os
 from collections import defaultdict
-from utils import create_video_writer
+
 import numpy
+from utils import create_video_writer
 from vis_utils import put_test_on_upper_corner
+
 
 OUT_FOLDER = "/users/samet/desktop/output/"
 
