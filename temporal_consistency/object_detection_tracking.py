@@ -89,7 +89,9 @@ def object_detection_and_tracking(
 
     writer = create_video_writer(video_cap, output_filepath)
 
-    tframe_collection = TrackedFrameCollection(video_cap=video_cap)
+    tframe_collection = TrackedFrameCollection(
+        video_cap=video_cap, classes=model.names
+    )
     frame_id = 0
 
     while True:
@@ -104,7 +106,7 @@ def object_detection_and_tracking(
         )
         frame_id += 1
 
-        if end_of_video or frame_id > 200:
+        if end_of_video or frame_id > 100:
             break
 
         # if frame_id == 100:
@@ -115,10 +117,10 @@ def object_detection_and_tracking(
         # break
         writer.write(frame_after)
 
+    tframe_collection.export_all_objects()
+
     video_cap.release()
     writer.release()
     cv2.destroyAllWindows()
-
-    tframe_collection.export_all_objects()
 
     return None
