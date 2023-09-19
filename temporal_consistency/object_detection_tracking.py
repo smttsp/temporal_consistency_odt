@@ -8,30 +8,30 @@ from utils import create_video_writer
 from vis_utils import draw_bbox_around_object, draw_fps_on_frame
 
 
+def get_detected_object(data, confidence_threshold):
+    confidence = data[4]
+
+    res = []
+    if confidence >= confidence_threshold:
+        x_min, y_min, x_max, y_max = map(int, data[:4])
+        ltwh = [x_min, y_min, x_max - x_min, y_max - y_min]
+        class_id = int(data[5])
+        res = [ltwh, confidence, class_id]
+    return res
+
+
 def object_detection(model, frame, num_aug=0, confidence_threshold=0.0):
     frame_aug = get_random_augmentation(frame, num_aug=num_aug)
 
     with torch.no_grad():
         detections = model(frame)[0]
 
-    results = []
+    all_filtered_results = [
+        get_detected_object(data, confidence_threshold)
+        for data in detections.boxes.data.tolist()
+    ]
 
-    for data in detections.boxes.data.tolist():
-        confidence = data[4]
-
-        if float(confidence) < confidence_threshold:
-            continue
-
-        x_min, y_min, x_max, y_max = (
-            int(data[0]),
-            int(data[1]),
-            int(data[2]),
-            int(data[3]),
-        )
-        ltwh = [x_min, y_min, x_max - x_min, y_max - y_min]
-        class_id = int(data[5])
-
-        results.append([ltwh, confidence, class_id])
+    results = [res for res in all_filtered_results if res]
 
     return results, frame_aug
 
@@ -64,6 +64,7 @@ def process_single_frame(
     ret, frame = video_cap.read()
     if not ret:
         return True, None, 0
+
     results, frame_aug = object_detection(
         model, frame, num_aug, confidence_threshold
     )
