@@ -5,9 +5,10 @@ from ultralytics import YOLO
 from temporal_consistency.object_detection_tracking import (
     object_detection_and_tracking,
 )
+from deep_sort_realtime.deepsort_tracker import DeepSort
 
 
-CONFIDENCE_THRESHOLD = 0.5
+CONFIDENCE_THRESHOLD = 0.4
 
 
 def parse_args():
@@ -57,9 +58,11 @@ if __name__ == "__main__":
     num_aug = args.num_aug
 
     model = YOLO("yolov8n.pt")
+    deep_sort_tracker = DeepSort(max_age=50)
 
     object_detection_and_tracking(
         model,
+        deep_sort_tracker,
         video_filepath="data/video1.mp4",
         num_aug=num_aug,
         confidence_threshold=confidence_threshold,
