@@ -1,5 +1,4 @@
-import argparse
-
+import configargparse
 from deep_sort_realtime.deepsort_tracker import DeepSort
 from ultralytics import YOLO
 
@@ -13,18 +12,36 @@ MAX_AGE = 25
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
+    parser = configargparse.ArgumentParser(
         description="Demo for parsing different types of data"
     )
-
+    parser.add_argument(
+        "--config",
+        is_config_file=True,
+        default="conf.yaml",
+        help="Path to the config file",
+    )
+    parser.add_argument(
+        "--video_filepath",
+        help="Path to the input video file",
+    )
+    parser.add_argument(
+        "--out_folder",
+        help="Path to the output folder",
+    )
     parser.add_argument(
         "--confidence",
         type=float,
         default=CONFIDENCE_THRESHOLD,
         help="Filtering predictions with low confidence",
     )
+    parser.add_argument(
+        "--max_age",
+        type=float,
+        default=MAX_AGE,
+        help="Filtering predictions with low confidence",
+    )
 
-    # Parsing a string
     parser.add_argument(
         "--details",
         type=int,
@@ -35,7 +52,6 @@ def parse_args():
         "2: more details"
         "3: most details",
     )
-
     parser.add_argument(
         "--num_aug",
         type=int,
@@ -48,19 +64,20 @@ def parse_args():
     return args
 
 
-if __name__ == "__main__":
-    args = parse_args()
-    confidence_threshold = args.confidence
-    num_aug = args.num_aug
-
+def main(args):
     model = YOLO("yolov8n.pt")
-    deep_sort_tracker = DeepSort(max_age=MAX_AGE)
+    deep_sort_tracker = DeepSort(max_age=args.max_age)
 
     object_detection_and_tracking(
         model,
         deep_sort_tracker,
-        video_filepath="data/video1.mp4",
-        num_aug=num_aug,
-        confidence_threshold=confidence_threshold,
+        video_filepath=args.video_filepath,
+        num_aug=args.num_aug,
+        confidence_threshold=args.confidence,
     )
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    main(args)
     print()
