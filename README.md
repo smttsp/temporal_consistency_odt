@@ -1,32 +1,31 @@
-# Temporal Video Consistency
+# Temporal Anomaly Detection of Videos
 **Data collection through temporal consistency of a video:** 
 
 
 This repository harnesses object detection and tracking techniques to identify inconsistencies 
-and anomalies in video sequences. Specifically, the system identifies:
+and anomalies in video sequences.
+As the system captures these anomalies, those failures can then be used to refine the object detection model.
+Such failures will then be used for training, validation, and testing stages of the next versions of the model. 
+
+The system identifies the following anomalies:
 
 **Discrepancies in Object Count**:
-
-   - Frames missing objects that are present in adjacent frames.
-   - Frames with additional objects not found in adjacent frames.
+- Frames missing objects that are present in adjacent frames.
+- Frames with additional objects not found in adjacent frames.
 
 **Class Mismatch**: 
+- Instances where an object's predicted class differs from its previous frame classification.
 
-Instances where an object's predicted class differs from its previous frame classification.
-
-**Low IOU**: 
-
-Situations where the intersection-over-union (IOU) of an object between two consecutive frames drops below a threshold, indicating potential tracking issues.
+**Low IOU**:
+- Situations where the intersection-over-union (IOU) of an object between two consecutive frames drops below a threshold, indicating potential tracking issues.
 
 ---
-The primary goal of this repo is enhancing model training. 
-As the system captures these anomalies, those failures can then be used to refine the object detection model.
 
 **Augmentation Evaluation**:
 The repository also supports the application of random frame augmentations. 
 By observing how these augmentations affect detection outcomes, users can 
-assess the resilience and robustness of the detection model, specifically `yolo_v8`. 
-This also aids in accumulating diverse samples that can further improve the model's performance.
+assess the resilience and robustness of the detection model (`yolo_v8` in our case).
+This may also aid in accumulating diverse samples that can further improve the model's performance.
 
 
 ### Examples
@@ -56,9 +55,6 @@ Below is an example of low_iou (in fact, object_3 is switched to another car). H
 Here is an example where an object is cropped from the video
 
 https://github.com/smttsp/temporal_consistency_odt/assets/4594945/7970143b-e82f-4b81-9850-f3df67cd0299
-
-
-
 
 
 ## TODO
