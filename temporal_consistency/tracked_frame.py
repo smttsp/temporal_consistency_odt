@@ -9,6 +9,10 @@ from temporal_consistency.vis_utils import put_test_on_upper_corner
 
 
 class Prediction:
+    """Single prediction for an object. Contains the bounding box coordinates,
+    confidence, class ID, and class name.
+    """
+
     def __init__(
         self,
         frame_id: int,
@@ -25,6 +29,8 @@ class Prediction:
 
 
 class TrackedFrame:
+    """A single frame together with its tracked objects."""
+
     def __init__(self, frame_id, frame, tracker):
         self.frame_id = frame_id
         self.tracker = copy.deepcopy(tracker)
@@ -37,6 +43,8 @@ class TrackedFrame:
 
 
 class TrackedFrameCollection:
+    """A collection of TrackedFrames containing frames and the tracked objects."""
+
     def __init__(self, video_cap, class_names, out_folder):
         self.video_cap = video_cap
         self.out_folder = out_folder
@@ -45,10 +53,16 @@ class TrackedFrameCollection:
         self.all_objects = defaultdict(dict)
 
     def add_tracked_frame(self, tracked_frame: TrackedFrame):
-        self.tracked_frames.append(tracked_frame)
-        self.update_frame_objects_dict(tracked_frame)
+        """Adds a tracked frame to the collection."""
 
-    def update_frame_objects_dict(self, tracked_frame):
+        self.tracked_frames.append(tracked_frame)
+        self.update_all_objects_dict(tracked_frame)
+
+    def update_all_objects_dict(self, tracked_frame):
+        """Updates the dictionary of objects. Each key is an object ID
+        and the value is a dictionary of frame IDs and predictions.
+        """
+
         for track in tracked_frame.tracker.tracks:
             cur_pred = Prediction(
                 frame_id=tracked_frame.frame_id,
@@ -61,6 +75,8 @@ class TrackedFrameCollection:
             self.all_objects[track.track_id].update(cur_dict)
 
     def export_all_objects(self, out_video_fps):
+        """Exports all objects to individual videos."""
+
         os.makedirs(self.out_folder, exist_ok=True)
 
         for object_id in self.all_objects:
@@ -71,6 +87,8 @@ class TrackedFrameCollection:
             self.export_object(writer, object_id)
 
     def export_object(self, writer, object_id):
+        """Exports a single object to a video file."""
+
         a_dict = self.all_objects[object_id]
 
         start_idx, end_idx = min(a_dict.keys()), max(a_dict.keys())
