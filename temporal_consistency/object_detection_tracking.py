@@ -1,7 +1,10 @@
 import datetime
 
 import cv2
+import numpy
 import torch
+from deep_sort_realtime.deepsort_tracker import DeepSort
+
 from temporal_consistency.augmentations import get_random_augmentation
 from temporal_consistency.tracked_frame import (
     TrackedFrame,
@@ -42,8 +45,30 @@ def object_detection(model, frame, num_aug=0, confidence_threshold=0.0):
     return results, frame_aug
 
 
-def object_tracking(frame, results, deep_sort_tracker, classes):
-    # update the tracker with the new detections
+def object_tracking(
+    frame: numpy.ndarray,
+    results: list,
+    deep_sort_tracker: DeepSort,
+    classes: dict,
+) -> numpy.ndarray:
+    """Processes the given frame with object tracking using Deep SORT
+        and visualizes the tracking results.
+
+    The function takes an input frame, object detection results, a DeepSort
+    tracker instance, and a dictionary mapping class IDs to class names.
+    It updates the tracker with the new detection results and draws bounding boxes
+    around the confirmed tracks on a copy of the input frame.
+
+    Args:
+        frame (numpy.ndarray): The frame on which objects are detected and tracked.
+        results (list): List of object detection results for the given frame.
+        deep_sort_tracker (DeepSort): Instance of the DST to update and track objects.
+        classes (dict): Dictionary mapping class IDs to class names for visualization.
+
+    Returns:
+        numpy.ndarray: Frame with drawn bboxes around the confirmed tracked objects.
+    """
+
     tracks = deep_sort_tracker.update_tracks(results, frame=frame)
 
     frame_after = frame.copy()
@@ -114,6 +139,9 @@ def object_detection_and_tracking(model, deep_sort_tracker, args):
             confidence_threshold,
         )
         if end_of_video:
+            break
+
+        if frame_id >= 200:
             break
 
         writer.write(frame_after)
