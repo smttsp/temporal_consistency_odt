@@ -2,3 +2,4 @@ video_filepath: /users/samet/desktop/temporal_consistency/data/video1.mp4
 confidence: 0.4
 num_aug: 0
 out_folder: /users/samet/desktop/temporal_consistency/output/
+out_video_fps: 10

@@ -165,11 +165,11 @@ def object_detection_and_tracking(model, deep_sort_tracker, args):
     num_aug = args.num_aug
     confidence_threshold = args.confidence
     out_folder = args.out_folder
-
+    out_video_fps = args.out_video_fps
     video_cap = cv2.VideoCapture(video_filepath)
     output_filepath = video_filepath.replace(".mp4", "_output.mp4")
 
-    writer = create_video_writer(video_cap, output_filepath)
+    writer = create_video_writer(video_cap, output_filepath, fps=out_video_fps)
 
     tframe_collection = TrackedFrameCollection(
         video_cap=video_cap, class_names=model.names, out_folder=out_folder
@@ -189,13 +189,13 @@ def object_detection_and_tracking(model, deep_sort_tracker, args):
         if end_of_video:
             break
 
-        if frame_id >= 200:
+        if frame_id >= 100:
             break
 
         writer.write(frame_after)
         frame_id += 1
 
-    tframe_collection.export_all_objects()
+    tframe_collection.export_all_objects(out_video_fps=out_video_fps)
 
     video_cap.release()
     writer.release()
