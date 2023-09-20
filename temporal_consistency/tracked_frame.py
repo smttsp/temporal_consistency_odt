@@ -39,10 +39,10 @@ class TrackedFrame:
 
 
 class TrackedFrameCollection:
-    def __init__(self, video_cap, classes, out_folder=OUT_FOLDER):
+    def __init__(self, video_cap, class_names, out_folder=OUT_FOLDER):
         self.video_cap = video_cap
         self.out_folder = out_folder
-        self.classes = classes
+        self.class_names = class_names
         self.tracked_frames = []
         self.all_objects = defaultdict(dict)
 
@@ -52,7 +52,14 @@ class TrackedFrameCollection:
 
     def update_frame_objects_dict(self, tracked_frame):
         for track in tracked_frame.tracker.tracks:
-            cur_dict = {tracked_frame.frame_id: list(map(int, track.to_ltrb()))}
+            cur_pred = Prediction(
+                frame_id=tracked_frame.frame_id,
+                ltrb=list(map(int, track.to_ltrb())),
+                confidence=track.det_conf,
+                class_id=track.det_class,
+                class_names=self.class_names,
+            )
+            cur_dict = {tracked_frame.frame_id: cur_pred}
             self.all_objects[track.track_id].update(cur_dict)
 
     def export_all_objects(self):
@@ -74,11 +81,12 @@ class TrackedFrameCollection:
             frame = self.tracked_frames[frame_id].frame
 
             black_frame = numpy.zeros_like(frame)
-            x1, y1, x2, y2 = a_dict[frame_id]
+            cur_pred = a_dict[frame_id]
+            x1, y1, x2, y2 = cur_pred.ltrb
             black_frame[y1 : y2 + 1, x1 : x2 + 1] = frame[
                 y1 : y2 + 1, x1 : x2 + 1
             ]
-            class_name = self.__get_class_name_from_track(frame_id, object_id)
+            class_name = cur_pred.class_name
 
             text = f"{frame_id=}, {object_id=}, {class_name=}"
             put_test_on_upper_corner(black_frame, text)
@@ -86,9 +94,9 @@ class TrackedFrameCollection:
 
         writer.release()
 
-    def __get_class_name_from_track(self, frame_id, object_id):
-        tracks = self.tracked_frames[frame_id].tracker.tracks
-        class_ids = [t.det_class for t in tracks if t.track_id == object_id]
-        class_id = class_ids[0]
-        class_name = self.classes[class_id]
-        return class_name
+    # def __get_class_name_from_track(self, frame_id, object_id):
+    #     tracks = self.tracked_frames[frame_id].tracker.tracks
+    #     class_ids = [t.det_class for t in tracks if t.track_id == object_id]
+    #     class_id = class_ids[0]
+    #     class_name = self.class_names[class_id]
+    #     return class_name

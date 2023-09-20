@@ -96,7 +96,7 @@ def object_detection_and_tracking(
     writer = create_video_writer(video_cap, output_filepath)
 
     tframe_collection = TrackedFrameCollection(
-        video_cap=video_cap, classes=model.names
+        video_cap=video_cap, class_names=model.names
     )
     frame_id = 0
 
@@ -122,4 +122,4 @@ def object_detection_and_tracking(
     writer.release()
     cv2.destroyAllWindows()
 
-    return None
+    return tframe_collection
