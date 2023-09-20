@@ -10,6 +10,22 @@ from temporal_consistency.vis_utils import put_test_on_upper_corner
 OUT_FOLDER = "/users/samet/desktop/output/"
 
 
+class Prediction:
+    def __init__(
+        self,
+        frame_id: int,
+        ltrb: list[int],
+        confidence: float,
+        class_id: int,
+        class_names: dict,
+    ):
+        self.frame_id = frame_id
+        self.ltrb = ltrb
+        self.confidence = confidence
+        self.class_id = class_id
+        self.class_name = class_names.get(class_id, None)
+
+
 class TrackedFrame:
     def __init__(self, frame_id, frame, tracker):
         self.frame_id = frame_id
