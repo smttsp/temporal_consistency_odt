@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "temporal_consistency"
-version = "1.0.0"
-description = "This is a template example for python packages"
+version = "1.1.0"
+description = "Temporal Anomaly Detection in Videos"
 authors = ["samet <samettaspinarx@gmail.com>"]
 
 [tool.poetry.dependencies]

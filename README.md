@@ -1,4 +1,4 @@
-# Temporal Anomaly Detection of Videos
+# Temporal Anomaly Detection in Videos
 **Data collection through temporal consistency of a video:** 
 
 
