@@ -70,11 +70,7 @@ def main(args):
     deep_sort_tracker = DeepSort(max_age=args.max_age)
 
     tframe_collection = object_detection_and_tracking(
-        model,
-        deep_sort_tracker,
-        video_filepath=args.video_filepath,
-        num_aug=args.num_aug,
-        confidence_threshold=args.confidence,
+        model, deep_sort_tracker, args
     )
     TemporalAnomalyDetector(tframe_collection)
 

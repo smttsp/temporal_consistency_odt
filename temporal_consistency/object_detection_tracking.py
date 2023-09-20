@@ -87,16 +87,19 @@ def process_single_frame(
     return False, frame_after
 
 
-def object_detection_and_tracking(
-    model, deep_sort_tracker, video_filepath, num_aug, confidence_threshold
-):
+def object_detection_and_tracking(model, deep_sort_tracker, args):
+    video_filepath = args.video_filepath
+    num_aug = args.num_aug
+    confidence_threshold = args.confidence
+    out_folder = args.out_folder
+
     video_cap = cv2.VideoCapture(video_filepath)
     output_filepath = video_filepath.replace(".mp4", "_output.mp4")
 
     writer = create_video_writer(video_cap, output_filepath)
 
     tframe_collection = TrackedFrameCollection(
-        video_cap=video_cap, class_names=model.names
+        video_cap=video_cap, class_names=model.names, out_folder=out_folder
     )
     frame_id = 0
 

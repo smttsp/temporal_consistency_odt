@@ -7,9 +7,6 @@ from temporal_consistency.utils import create_video_writer
 from temporal_consistency.vis_utils import put_test_on_upper_corner
 
 
-OUT_FOLDER = "/users/samet/desktop/output/"
-
-
 class Prediction:
     def __init__(
         self,
@@ -39,7 +36,7 @@ class TrackedFrame:
 
 
 class TrackedFrameCollection:
-    def __init__(self, video_cap, class_names, out_folder=OUT_FOLDER):
+    def __init__(self, video_cap, class_names, out_folder):
         self.video_cap = video_cap
         self.out_folder = out_folder
         self.class_names = class_names
