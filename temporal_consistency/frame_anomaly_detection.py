@@ -20,8 +20,8 @@ class TemporalAnomalyDetector:
                 containing tracked objects.
         """
         self.frame_collection = frame_collection
-        self.scan_for_anomalies()
         self.anomalies = defaultdict(list)
+        self.scan_for_anomalies()
 
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""
