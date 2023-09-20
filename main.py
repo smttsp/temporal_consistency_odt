@@ -63,6 +63,12 @@ def parse_args():
         choices=[0, 1, 2, 3],
         help="Each frame will go through up to 3 augmentations. 0-> no augmentation",
     )
+    parser.add_argument(
+        "--out_video_fps",
+        type=int,
+        default=25,
+        help="FPS of the output videos",
+    )
 
     args = parser.parse_args()
     return args
