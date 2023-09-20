@@ -1,6 +1,6 @@
 import pytest
 
-from temporal_consistency.utils import compute_iou
+from temporal_consistency.utils import compute_iou, get_runtime_str
 
 
 EPS = 1e-10
@@ -27,3 +27,9 @@ EPS = 1e-10
 )
 def test_compute_iou(box1, box2, expected_iou):
     assert abs(compute_iou(box1, box2) - expected_iou) < EPS
+
+
+def test_get_runtime_str():
+    runtime_str = get_runtime_str()
+    assert len(runtime_str) == 15
+    assert runtime_str[8] == "-"
