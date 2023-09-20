@@ -4,8 +4,10 @@
 
 This repository harnesses object detection and tracking techniques to identify inconsistencies 
 and anomalies in video sequences.
-As the system captures these anomalies, those failures can then be used to refine the object detection model.
-Such failures will then be used for training, validation, and testing stages of the next versions of the model. 
+By identifying these discrepancies, we can capture valuable data to enhance our object
+detection model. 
+These identified anomalies can subsequently be used in the training, validation, and 
+testing phases for future iterations of the model.
 
 The system identifies the following anomalies:
 
