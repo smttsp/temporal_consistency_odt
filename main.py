@@ -2,10 +2,10 @@ import configargparse
 from deep_sort_realtime.deepsort_tracker import DeepSort
 from ultralytics import YOLO
 
+from temporal_consistency.frame_anomaly_detection import TemporalAnomalyDetector
 from temporal_consistency.object_detection_tracking import (
     object_detection_and_tracking,
 )
-from temporal_consistency.frame_anomaly_detection import TemporalAnomalyDetector
 
 
 CONFIDENCE_THRESHOLD = 0.4

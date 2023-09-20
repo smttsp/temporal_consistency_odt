@@ -3,6 +3,7 @@ import os
 from collections import defaultdict
 
 import numpy
+
 from temporal_consistency.utils import create_video_writer
 from temporal_consistency.vis_utils import put_test_on_upper_corner
 
@@ -78,22 +79,15 @@ class TrackedFrameCollection:
             frame = self.tracked_frames[frame_id].frame
 
             black_frame = numpy.zeros_like(frame)
-            cur_pred = a_dict[frame_id]
-            x1, y1, x2, y2 = cur_pred.ltrb
+            cur_prediction = a_dict[frame_id]
+            x1, y1, x2, y2 = cur_prediction.ltrb
             black_frame[y1 : y2 + 1, x1 : x2 + 1] = frame[
                 y1 : y2 + 1, x1 : x2 + 1
             ]
-            class_name = cur_pred.class_name
+            class_name = cur_prediction.class_name
 
             text = f"{frame_id=}, {object_id=}, {class_name=}"
             put_test_on_upper_corner(black_frame, text)
             writer.write(black_frame)
 
         writer.release()
-
-    # def __get_class_name_from_track(self, frame_id, object_id):
-    #     tracks = self.tracked_frames[frame_id].tracker.tracks
-    #     class_ids = [t.det_class for t in tracks if t.track_id == object_id]
-    #     class_id = class_ids[0]
-    #     class_name = self.class_names[class_id]
-    #     return class_name

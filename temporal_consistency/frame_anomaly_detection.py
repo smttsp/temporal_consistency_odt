@@ -30,7 +30,8 @@ class TemporalAnomalyDetector:
         """Initializes the TemporalAnomalyDetector.
 
         Args:
-            frame_collection (TrackedFrameCollection): A collection of frames containing tracked objects.
+            frame_collection (TrackedFrameCollection): A collection of frames
+                containing tracked objects.
         """
         self.frame_collection = frame_collection
         self.scan_for_anomalies()
@@ -43,6 +44,7 @@ class TemporalAnomalyDetector:
             anomaly_exist = self.inspect_object_for_anomalies(
                 object_id, track_info
             )
+            return anomaly_exist
 
     def inspect_object_for_anomalies(self, object_id, track_info) -> bool:
         """Checks for potential anomalies for a single tracked object.
@@ -95,7 +97,8 @@ class TemporalAnomalyDetector:
         return expected_size != size
 
     def appears_only_in_single_frame(self, object_id, track_info) -> bool:
-        """Checks if an object only appears in a single frame, potentially indicating a false detection.
+        """Checks if an object only appears in a single frame, potentially
+            indicating a false detection.
 
         Returns:
             bool: True if the object appears in only one frame, False otherwise.
@@ -103,13 +106,14 @@ class TemporalAnomalyDetector:
 
         if len(track_info) == 1:
             print(
-                f"{object_id=} occurs only in one frame, potentially indicating a false detection"
+                f"{object_id=} occurs only in one frame, may indicate a false detection"
             )
 
         return len(track_info) == 1
 
     def has_low_iou(self, object_id, track_info) -> bool:
-        """Assesses if the Intersection over Union (IoU) is below a threshold, indicating potential tracking issues.
+        """Assesses if the Intersection over Union (IoU) is below a threshold,
+            indicating potential tracking issues.
 
         Returns:
             bool: True if the IoU is low, False otherwise.
@@ -129,9 +133,3 @@ class TemporalAnomalyDetector:
                 )
                 flag = True
         return flag
-
-    # ----------------------------------------------------------------------------------------
-    # 1. check if class_name is consistent
-    # 2. check if there is a missing frame (object doesn't exist in one frame)
-    # 3. check if there is an object occurring only in one frame
-    # 4. check if there is low_iou in one frame
