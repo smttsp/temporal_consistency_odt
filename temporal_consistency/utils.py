@@ -7,7 +7,7 @@ import cv2
 EPS = sys.float_info.epsilon
 
 
-def create_video_writer(video_cap, output_filename):
+def create_video_writer(video_cap, output_filename, fps=None):
     """Create a video writer object to write the output video
 
     Args:
@@ -21,7 +21,7 @@ def create_video_writer(video_cap, output_filename):
     # grab the width, height, and fps of the frames in the video stream.
     frame_width = int(video_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fps = int(video_cap.get(cv2.CAP_PROP_FPS))
+    fps = int(video_cap.get(cv2.CAP_PROP_FPS)) if fps is None else fps
 
     # initialize the FourCC and a video writer object
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")

@@ -8,6 +8,9 @@ from temporal_consistency.utils import create_video_writer
 from temporal_consistency.vis_utils import put_test_on_upper_corner
 
 
+OBJECT_VIDEO_FPS = 10
+
+
 class Prediction:
     def __init__(
         self,
@@ -60,12 +63,14 @@ class TrackedFrameCollection:
             cur_dict = {tracked_frame.frame_id: cur_pred}
             self.all_objects[track.track_id].update(cur_dict)
 
-    def export_all_objects(self):
+    def export_all_objects(self, object_video_fps=OBJECT_VIDEO_FPS):
         os.makedirs(self.out_folder, exist_ok=True)
 
         for object_id in self.all_objects:
             filename = os.path.join(self.out_folder, f"obj_{object_id}.mp4")
-            writer = create_video_writer(self.video_cap, filename)
+            writer = create_video_writer(
+                self.video_cap, filename, fps=object_video_fps
+            )
             self.export_object(writer, object_id)
 
     def export_object(self, writer, object_id):
