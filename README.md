@@ -21,14 +21,6 @@ The system identifies the following anomalies:
 **Low IOU**:
 - Situations where the intersection-over-union (IOU) of an object between two consecutive frames drops below a threshold, indicating potential tracking issues.
 
----
-
-**Augmentation Evaluation**:
-The repository also supports the application of random frame augmentations. 
-By observing how these augmentations affect detection outcomes, users can 
-assess the resilience and robustness of the detection model (`yolo_v8` in our case).
-This may also aid in accumulating diverse samples that can further improve the model's performance.
-
 
 ### Examples
 
@@ -61,11 +53,18 @@ Notice that in frame 38, the class name changes from `car` to `truck`, and in th
 https://github.com/smttsp/temporal_consistency_odt/assets/4594945/88e8f4d6-2b87-4e1a-8869-664b5478fa1f
 
 
-## TODO
+---
 
-I will integrate the augmentations in the next iteration. Currently, the 
-implementation requires some reviews. I haven't really investigated the code
-nor added any unit-tests. So, I suspect the code might be buggy. 
+**Augmentation Evaluation**:
+The repository also supports the application of random frame augmentations. 
+By observing how these augmentations affect detection outcomes, users can 
+assess the resilience and robustness of the detection model (`yolo_v8` in our case).
+This may also aid in accumulating diverse samples that can further improve the model's performance.
+
+Below is an example of random augmentations **TRIGGER ALERT: might trigger photosensitive people!!!**:
+
+https://github.com/smttsp/temporal_consistency_odt/assets/4594945/36507731-c401-45ce-8d4a-56939619ebc9
+
 
 ## Installation
 
