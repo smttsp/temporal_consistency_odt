@@ -52,7 +52,7 @@ def object_detection(model, frame, num_aug=0, confidence_threshold=0.1):
     frame_aug = get_random_augmentation(frame, num_aug=num_aug)
 
     with torch.no_grad():
-        detections = model(frame)[0]
+        detections = model(frame_aug)[0]
 
     all_filtered_results = [
         get_detected_object(data, confidence_threshold)
