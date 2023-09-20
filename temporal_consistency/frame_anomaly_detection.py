@@ -1,6 +1,8 @@
 import sys
 from collections import defaultdict
 
+from loguru import logger
+
 from temporal_consistency.tracked_frame import TrackedFrameCollection
 from temporal_consistency.utils import compute_iou
 
@@ -40,7 +42,7 @@ class TemporalAnomalyDetector:
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""
         for object_id, track_info in self.frame_collection.all_objects.items():
-            print(object_id)
+            logger.info(object_id)
             anomaly_exist = self.inspect_object_for_anomalies(
                 object_id, track_info
             )
@@ -75,7 +77,7 @@ class TemporalAnomalyDetector:
         all_classes = set(v.class_name for v in track_info.values())
 
         if len(all_classes) > 1:
-            print(
+            logger.info(
                 f"{object_id=} occurs as the following classes: {all_classes}"
             )
 
@@ -92,7 +94,9 @@ class TemporalAnomalyDetector:
         mn_idx, mx_idx, size = min(keys), max(keys), len(track_info)
         expected_size = mx_idx - mn_idx + 1
         if size != expected_size:
-            print(f"{object_id=} is missing in {expected_size - size} frames")
+            logger.info(
+                f"{object_id=} is missing in {expected_size - size} frames"
+            )
 
         return expected_size != size
 
@@ -105,7 +109,7 @@ class TemporalAnomalyDetector:
         """
 
         if len(track_info) == 1:
-            print(
+            logger.info(
                 f"{object_id=} occurs only in one frame, may indicate a false detection"
             )
 
@@ -127,7 +131,7 @@ class TemporalAnomalyDetector:
 
             iou = compute_iou(t1.ltrb, t2.ltrb)
             if iou < MIN_IOU_THRESH:
-                print(
+                logger.info(
                     f"{iou=} is lower than threshold of {MIN_IOU_THRESH} "
                     f"between {key1} and {key2}"
                 )

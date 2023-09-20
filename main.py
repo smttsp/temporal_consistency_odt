@@ -1,11 +1,15 @@
+import os
+
 import configargparse
 from deep_sort_realtime.deepsort_tracker import DeepSort
+from loguru import logger
 from ultralytics import YOLO
 
 from temporal_consistency.frame_anomaly_detection import TemporalAnomalyDetector
 from temporal_consistency.object_detection_tracking import (
     object_detection_and_tracking,
 )
+from temporal_consistency.utils import get_runtime_str
 
 
 CONFIDENCE_THRESHOLD = 0.4
@@ -66,6 +70,8 @@ def parse_args():
 
 
 def main(args):
+    logger.add(os.path.join(args.out_folder, f"{get_runtime_str()}.log"))
+
     model = YOLO("yolov8n.pt")
     deep_sort_tracker = DeepSort(max_age=args.max_age)
 
@@ -77,5 +83,5 @@ def main(args):
 
 if __name__ == "__main__":
     args = parse_args()
+
     main(args)
-    print()

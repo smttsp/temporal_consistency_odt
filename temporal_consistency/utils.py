@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 
 import cv2
 
@@ -39,3 +40,17 @@ def compute_iou(bbox1, bbox2):
     iou = inter_area / float(box1_area + box2_area - inter_area + EPS)
 
     return iou
+
+
+def get_runtime_str():
+    """Getting datetime as a string"""
+
+    runtime_str = (
+        datetime.now()
+        .isoformat()
+        .replace(":", "")
+        .replace("-", "")
+        .replace("T", "-")
+        .split(".")[0]
+    )
+    return runtime_str
