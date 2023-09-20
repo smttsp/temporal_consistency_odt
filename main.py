@@ -5,6 +5,7 @@ from ultralytics import YOLO
 from temporal_consistency.object_detection_tracking import (
     object_detection_and_tracking,
 )
+from temporal_consistency.frame_anomaly_detection import TemporalAnomalyDetector
 
 
 CONFIDENCE_THRESHOLD = 0.4
@@ -68,13 +69,14 @@ def main(args):
     model = YOLO("yolov8n.pt")
     deep_sort_tracker = DeepSort(max_age=args.max_age)
 
-    object_detection_and_tracking(
+    tframe_collection = object_detection_and_tracking(
         model,
         deep_sort_tracker,
         video_filepath=args.video_filepath,
         num_aug=args.num_aug,
         confidence_threshold=args.confidence,
     )
+    TemporalAnomalyDetector(tframe_collection)
 
 
 if __name__ == "__main__":

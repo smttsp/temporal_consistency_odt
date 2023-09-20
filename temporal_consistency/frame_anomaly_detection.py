@@ -29,12 +29,13 @@ class TemporalAnomalyDetector:
     def __init__(self, frame_collection: TrackedFrameCollection):
         self.frame_collection = frame_collection
 
-    def evaluate_middle_frame(self):
-        return (
-            self.check_if_missing_or_extra_object()
-            or self.check_incorrect_object_classification()
-            or self.is_low_iou()
-        )
+    def scan_for_anomalies(self):
+        """Scans for anomalies across all objects in the frame collection."""
+        for object_id, track_info in self.frame_collection.all_objects.items():
+            print(object_id)
+            anomaly_exist = self.inspect_object_for_anomalies(
+                object_id, track_info
+            )
 
     def check_if_missing_or_extra_object(self):
         """This checks if there is any object that is missing in the middle
