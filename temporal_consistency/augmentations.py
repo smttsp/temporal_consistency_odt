@@ -23,6 +23,8 @@ from albumentations import (
 
 
 def get_aug_list():
+    """Returns a list of augmentations to be applied to the frames."""
+
     return [
         RandomBrightnessContrast(p=1.0),
         RandomGamma(p=1.0),
@@ -51,6 +53,10 @@ def get_aug_list():
 
 
 def get_random_augmentation(image, num_aug=0):
+    """Pick random augmentations from the list and apply them to the image.
+    The number of augmentations to apply is specified by num_aug.
+    """
+
     image_aug = image
     if num_aug > 0:
         augmentation_pipeline = Compose(

@@ -5,7 +5,7 @@ from collections import defaultdict
 import numpy
 
 from temporal_consistency.utils import create_video_writer
-from temporal_consistency.vis_utils import put_test_on_upper_corner
+from temporal_consistency.vis_utils import put_text_on_upper_corner
 
 
 class Prediction:
@@ -107,7 +107,7 @@ class TrackedFrameCollection:
             class_name = cur_prediction.class_name
 
             text = f"{frame_id=}, {object_id=}, {class_name=}"
-            put_test_on_upper_corner(black_frame, text)
+            put_text_on_upper_corner(black_frame, text)
             writer.write(black_frame)
 
         writer.release()

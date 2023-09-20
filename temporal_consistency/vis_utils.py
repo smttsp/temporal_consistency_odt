@@ -6,7 +6,9 @@ BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
 
-def put_test_on_upper_corner(frame, text):
+def put_text_on_upper_corner(frame, text):
+    """Put text in the upper left corner of the frame."""
+
     cv2.putText(
         img=frame,
         text=text,
@@ -17,8 +19,14 @@ def put_test_on_upper_corner(frame, text):
         thickness=2,
     )
 
+    return None
+
 
 def draw_class_name(frame, ltrb_bbox, track_id, class_name):
+    """Draws the class name and track id on the frame. The class name and track
+    id are drawn on top of the bounding box.
+    """
+
     x_min, y_min, x_max, y_max = map(int, ltrb_bbox)
     # draw the bounding box and the track id
     cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), GREEN, 2)
@@ -33,18 +41,26 @@ def draw_class_name(frame, ltrb_bbox, track_id, class_name):
         color=WHITE,
         thickness=2,
     )
+
     return None
 
 
 def draw_bbox_around_object(frame, track, ltrb_bbox, classes):
+    """Draws a bounding box around the object and the class name and track id
+    on the frame.
+    """
+
     track_id = track.track_id
     cls = track.det_class
     class_name = classes.get(cls)
     draw_class_name(frame, ltrb_bbox, track_id, class_name)
+
     return None
 
 
 def draw_fps_on_frame(frame, total_time):
+    """Draws the FPS on the frame."""
+
     fps = f"FPS: {1000 / total_time:.2f}"
     cv2.putText(
         img=frame,

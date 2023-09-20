@@ -12,6 +12,8 @@ EPS = sys.float_info.epsilon
 
 
 class TemporalAnomalyDetector:
+    """Detects anomalies in the temporal consistency of the tracked objects."""
+
     def __init__(self, frame_collection: TrackedFrameCollection):
         """Initializes the TemporalAnomalyDetector.
 
@@ -19,6 +21,7 @@ class TemporalAnomalyDetector:
             frame_collection (TrackedFrameCollection): A collection of frames
                 containing tracked objects.
         """
+
         self.frame_collection = frame_collection
         self.anomalies = defaultdict(list)
         self.scan_for_anomalies()
