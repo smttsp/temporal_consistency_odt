@@ -27,7 +27,14 @@ def extract_object_pairs(tracker1, tracker2):
 
 class TemporalAnomalyDetector:
     def __init__(self, frame_collection: TrackedFrameCollection):
+        """Initializes the TemporalAnomalyDetector.
+
+        Args:
+            frame_collection (TrackedFrameCollection): A collection of frames containing tracked objects.
+        """
         self.frame_collection = frame_collection
+        self.scan_for_anomalies()
+        self.anomaly_logs = []
 
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""
@@ -37,65 +44,94 @@ class TemporalAnomalyDetector:
                 object_id, track_info
             )
 
-    def check_if_missing_or_extra_object(self):
-        """This checks if there is any object that is missing in the middle
-        but exists in the other two. Or middle one contains on object
-        that is not in the other ones.
+    def inspect_object_for_anomalies(self, object_id, track_info) -> bool:
+        """Checks for potential anomalies for a single tracked object.
+
+        Args:
+            object_id (int): Unique identifier for the object.
+            track_info (): Tracking information associated with the object.
+
+        Returns:
+            bool: True if anomalies are detected, False otherwise.
         """
 
-        prev_ids, mid_ids, next_ids = [
-            lst.object_ids for lst in self.frame_infos
-        ]
-
-        # Find elements in mid_ids that aren't in prev_ids or next_ids
-        extra_elements_in_mid = mid_ids - (prev_ids.union(next_ids))
-
-        # Find elements that are in both prev_ids and next_ids but not in mid_ids
-        missing_elements_in_mid = (prev_ids.intersection(next_ids)) - mid_ids
-
-        anomaly_elem = extra_elements_in_mid or missing_elements_in_mid
-        if anomaly_elem:
-            print(f"There is missing or extra elements: {anomaly_elem}")
-
-        return anomaly_elem
-
-    def check_incorrect_object_classification(self):
-        """The classes of each object should be consistent. If an object is classified
-        as a member of class_i, then class_j, this inconsistency shows there is a
-        discrepancy in classifications which is a good indicator that the frame
-        should be logged
-        """
-        prev, mid, next = self.frame_infos
-
-        # Extract data from the trackers
-        prev_data = extract_track_data(prev.tracker)
-        mid_data = extract_track_data(mid.tracker)
-        next_data = extract_track_data(next.tracker)
-
-        # Find common track_ids between the trackers
-        common_track_ids = (
-            set(prev_data.keys()) & set(mid_data.keys()) & set(next_data.keys())
+        anomaly_exist = (
+            self.is_class_inconsistent(object_id, track_info)
+            or self.is_object_missing_in_frames(object_id, track_info)
+            or self.appears_only_in_single_frame(object_id, track_info)
+            or self.has_low_iou(object_id, track_info)
         )
+        return anomaly_exist
 
-        # Identify mismatches in mid-tracker
-        mismatched_tracks = {}
-        for track_id in common_track_ids:
-            if (
-                mid_data[track_id] != prev_data[track_id]
-                or mid_data[track_id] != next_data[track_id]
-            ):
-                mismatched_tracks[track_id] = mid_data[track_id]
-                print("Mismatched tracks in mid:", mismatched_tracks)
-        return len(mismatched_tracks) > 0
+    def is_class_inconsistent(self, object_id, track_info) -> bool:
+        """Verifies that an object maintains consistent classification across frames.
 
-    def is_low_iou(self):
-        prev, mid = self.frame_infos[:2]
-        bbox_dict = extract_object_pairs(prev.tracker, mid.tracker)
+        Returns:
+            bool: True if the class is consistent, False if there are inconsistencies.
+        """
 
-        for track_id, pair in bbox_dict.items():
-            if len(pair) == 2:
-                iou = compute_iou(pair[0], pair[1])
-                if iou < MIN_IOU_THRESH:
-                    print(f"{iou=} is lower than threshold of {MIN_IOU_THRESH}")
-                    return True
-        return False
+        all_classes = set(v.class_name for v in track_info.values())
+
+        if len(all_classes) > 1:
+            print(
+                f"{object_id=} occurs as the following classes: {all_classes}"
+            )
+
+        return len(all_classes) > 1
+
+    def is_object_missing_in_frames(self, object_id, track_info) -> bool:
+        """Checks if an object goes missing in intermediate frames.
+
+        Returns:
+            bool: True if the object is missing in some frames, False otherwise.
+        """
+
+        keys = track_info.keys()
+        mn_idx, mx_idx, size = min(keys), max(keys), len(track_info)
+        expected_size = mx_idx - mn_idx + 1
+        if size != expected_size:
+            print(f"{object_id=} is missing in {expected_size - size} frames")
+
+        return expected_size != size
+
+    def appears_only_in_single_frame(self, object_id, track_info) -> bool:
+        """Checks if an object only appears in a single frame, potentially indicating a false detection.
+
+        Returns:
+            bool: True if the object appears in only one frame, False otherwise.
+        """
+
+        if len(track_info) == 1:
+            print(
+                f"{object_id=} occurs only in one frame, potentially indicating a false detection"
+            )
+
+        return len(track_info) == 1
+
+    def has_low_iou(self, object_id, track_info) -> bool:
+        """Assesses if the Intersection over Union (IoU) is below a threshold, indicating potential tracking issues.
+
+        Returns:
+            bool: True if the IoU is low, False otherwise.
+        """
+
+        keys = sorted(list(track_info.keys()))
+        flag = False
+        for key1, key2 in zip(keys, keys[1:]):
+            t1 = track_info[key1]
+            t2 = track_info[key2]
+
+            iou = compute_iou(t1.ltrb, t2.ltrb)
+            if iou < MIN_IOU_THRESH:
+                print(
+                    f"{iou=} is lower than threshold of {MIN_IOU_THRESH} "
+                    f"between {key1} and {key2}"
+                )
+                flag = True
+        return flag
+
+    # ----------------------------------------------------------------------------------------
+    # 1. check if class_name is consistent
+    # 2. check if there is a missing frame (object doesn't exist in one frame)
+    # 3. check if there is an object occurring only in one frame
+    # 4. check if there is low_iou in one frame
