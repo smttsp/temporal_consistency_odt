@@ -11,22 +11,6 @@ MIN_IOU_THRESH = 0.5
 EPS = sys.float_info.epsilon
 
 
-def extract_track_data(tracker):
-    """Extract track_id and det_class from each tracker"""
-    return {track.track_id: track.det_class for track in tracker.tracks}
-
-
-def extract_object_pairs(tracker1, tracker2):
-    bbox_dict = defaultdict(list)
-    for track in tracker1.tracks:
-        bbox_dict[track.track_id].append(track.to_ltrb())
-
-    for track in tracker2.tracks:
-        bbox_dict[track.track_id].append(track.to_ltrb())
-
-    return bbox_dict
-
-
 class TemporalAnomalyDetector:
     def __init__(self, frame_collection: TrackedFrameCollection):
         """Initializes the TemporalAnomalyDetector.
@@ -37,12 +21,14 @@ class TemporalAnomalyDetector:
         """
         self.frame_collection = frame_collection
         self.scan_for_anomalies()
+        self.anomalies = defaultdict(list)
 
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""
+
         for object_id, track_info in self.frame_collection.all_objects.items():
-            # logger.info(object_id)
             self.inspect_object_for_anomalies(object_id, track_info)
+
         return None
 
     def inspect_object_for_anomalies(self, object_id, track_info) -> bool:
@@ -74,9 +60,9 @@ class TemporalAnomalyDetector:
         all_classes = set(v.class_name for v in track_info.values())
 
         if len(all_classes) > 1:
-            logger.info(
-                f"{object_id=} occurs as the following classes: {all_classes}"
-            )
+            log = f"{object_id=} occurs as the following classes: {all_classes}"
+            logger.info(log)
+            self.anomalies[object_id].append(log)
 
         return len(all_classes) > 1
 
@@ -91,9 +77,9 @@ class TemporalAnomalyDetector:
         mn_idx, mx_idx, size = min(keys), max(keys), len(track_info)
         expected_size = mx_idx - mn_idx + 1
         if size != expected_size:
-            logger.info(
-                f"{object_id=} is missing in {expected_size - size} frames"
-            )
+            log = f"{object_id=} is missing in {expected_size - size} frames"
+            logger.info(log)
+            self.anomalies[object_id].append(log)
 
         return expected_size != size
 
@@ -106,9 +92,9 @@ class TemporalAnomalyDetector:
         """
 
         if len(track_info) == 1:
-            logger.info(
-                f"{object_id=} occurs only in one frame, may indicate a false detection"
-            )
+            log = f"{object_id=} occurs only in one frame, may indicate a false detection"
+            logger.info(log)
+            self.anomalies[object_id].append(log)
 
         return len(track_info) == 1
 
@@ -122,15 +108,20 @@ class TemporalAnomalyDetector:
 
         keys = sorted(list(track_info.keys()))
         flag = False
-        for key1, key2 in zip(keys, keys[1:]):
-            t1 = track_info[key1]
-            t2 = track_info[key2]
+        for frame_i, frame_j in zip(keys, keys[1:]):
+            t1 = track_info[frame_i]
+            t2 = track_info[frame_j]
 
+            # TODO (samet): Need to check if the bboxes are close to frame edges
             iou = compute_iou(t1.ltrb, t2.ltrb)
+
             if iou < MIN_IOU_THRESH:
-                logger.info(
+                log = (
                     f"{iou=} is lower than threshold of {MIN_IOU_THRESH} "
-                    f"between {key1} and {key2}"
+                    f"between {frame_i=} and {frame_j=}"
                 )
+                logger.info(log)
+                self.anomalies[object_id].append(log)
                 flag = True
+
         return flag
