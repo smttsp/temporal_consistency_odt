@@ -37,16 +37,13 @@ class TemporalAnomalyDetector:
         """
         self.frame_collection = frame_collection
         self.scan_for_anomalies()
-        self.anomaly_logs = []
 
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""
         for object_id, track_info in self.frame_collection.all_objects.items():
-            logger.info(object_id)
-            anomaly_exist = self.inspect_object_for_anomalies(
-                object_id, track_info
-            )
-            return anomaly_exist
+            # logger.info(object_id)
+            self.inspect_object_for_anomalies(object_id, track_info)
+        return None
 
     def inspect_object_for_anomalies(self, object_id, track_info) -> bool:
         """Checks for potential anomalies for a single tracked object.
