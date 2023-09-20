@@ -18,6 +18,16 @@ from temporal_consistency.vis_utils import (
 
 
 def get_detected_object(data, confidence_threshold):
+    """Filters out the detected object if the confidence is below the threshold.
+
+    Args:
+        data (list): List of data for a detected object.
+        confidence_threshold (float): Confidence threshold for object detection.
+
+    Returns:
+        list: List of data for a detected object if the confidence is above the thresh.
+    """
+
     confidence = data[4]
 
     res = []
@@ -29,7 +39,16 @@ def get_detected_object(data, confidence_threshold):
     return res
 
 
-def object_detection(model, frame, num_aug=0, confidence_threshold=0.0):
+def object_detection(model, frame, num_aug=0, confidence_threshold=0.1):
+    """Performs object detection on the given frame and returns the results.
+
+    Args:
+        model (YOLO): Model used for object detection.
+        frame (numpy.ndarray): Frame on which objects are detected.
+        num_aug (int, optional): Number of augmentations to apply to the frame.
+        confidence_threshold (float, optional): Threshold for object detection.
+    """
+
     frame_aug = get_random_augmentation(frame, num_aug=num_aug)
 
     with torch.no_grad():
@@ -90,6 +109,23 @@ def process_single_frame(
     num_aug,
     confidence_threshold,
 ):
+    """Processes a single frame from the video. This function does object
+        detection and tracking. It also updates the TrackedFrameCollection.
+        The last step is to draw the FPS on the frame.
+
+    Args:
+        model (YOLO): Model used for object detection.
+        video_cap (cv2.VideoCapture): Video capture object.
+        frame_id (int): Frame ID.
+        tframe_collection (TrackedFrameCollection): Collection of tracked frames.
+        deep_sort_tracker (DeepSort): Deep SORT tracker.
+        num_aug (int): Number of augmentations to apply to the frame.
+        confidence_threshold (float): Confidence threshold for object detection.
+
+    Returns:
+        bool: True if the end of the video is reached, False otherwise.
+    """
+
     start = datetime.datetime.now()
 
     ret, frame = video_cap.read()
@@ -113,6 +149,18 @@ def process_single_frame(
 
 
 def object_detection_and_tracking(model, deep_sort_tracker, args):
+    """Performs object detection and tracking on the given video.
+    It also outputs the tracked objects into separate videos.
+
+    Args:
+        model (YOLO): Model used for object detection.
+        deep_sort_tracker (DeepSort): Deep SORT tracker.
+        args (argparse.Namespace): Command line arguments obtained from config file.
+
+    Returns:
+        TrackedFrameCollection: Collection of tracked frames.
+    """
+
     video_filepath = args.video_filepath
     num_aug = args.num_aug
     confidence_threshold = args.confidence

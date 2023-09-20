@@ -46,7 +46,6 @@ def parse_args():
         default=MAX_AGE,
         help="Filtering predictions with low confidence",
     )
-
     parser.add_argument(
         "--details",
         type=int,
