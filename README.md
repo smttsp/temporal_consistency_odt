@@ -50,6 +50,17 @@ Below is an example of low_iou (in fact, object_3 is switched to another car). H
 | ![im1](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/8fd14598-5b28-429b-8b25-d030ad619284) | ![im2](https://github.com/smttsp/temporal_consistency_odt/assets/4594945/120fc6c3-738a-4ac6-957f-51d73495b39a) |
 
 
+## Other outputs
+
+
+Here is an example where an object is cropped from the video
+
+https://github.com/smttsp/temporal_consistency_odt/assets/4594945/7970143b-e82f-4b81-9850-f3df67cd0299
+
+
+
+
+
 ## TODO
 
 I will integrate the augmentations in the next iteration. Currently, the 
