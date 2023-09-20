@@ -54,9 +54,11 @@ Below is an example of low_iou (in fact, object_3 is switched to another car). H
 ## Other outputs
 
 
-Here is an example where an object is cropped from the video
+Here is an example where an object is cropped from the video. For the sake of visibility, it is captured with 5 FPS. 
 
-https://github.com/smttsp/temporal_consistency_odt/assets/4594945/7970143b-e82f-4b81-9850-f3df67cd0299
+Notice that in frame 38, the class name changes from `car` to `truck`, and in the next frame it switches back to `car`.
+
+https://github.com/smttsp/temporal_consistency_odt/assets/4594945/88e8f4d6-2b87-4e1a-8869-664b5478fa1f
 
 
 ## TODO
