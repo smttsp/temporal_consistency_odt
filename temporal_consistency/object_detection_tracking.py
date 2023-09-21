@@ -30,12 +30,10 @@ def get_detected_object(data, confidence_threshold):
 
     confidence = data[4]
 
-    res = []
-    if confidence >= confidence_threshold:
-        x_min, y_min, x_max, y_max = map(int, data[:4])
-        ltwh = [x_min, y_min, x_max - x_min, y_max - y_min]
-        class_id = int(data[5])
-        res = [ltwh, confidence, class_id]
+    x_min, y_min, x_max, y_max = map(int, data[:4])
+    ltwh = [x_min, y_min, x_max - x_min, y_max - y_min]
+    class_id = int(data[5])
+    res = [ltwh, confidence, class_id]
     return res
 
 
@@ -54,14 +52,20 @@ def object_detection(model, frame, num_aug=0, confidence_threshold=0.1):
     with torch.no_grad():
         detections = model(frame_aug)[0]
 
-    all_filtered_results = [
+    all_results = [
         get_detected_object(data, confidence_threshold)
         for data in detections.boxes.data.tolist()
     ]
+    results = []
+    low_confidence_results = []
 
-    results = [res for res in all_filtered_results if res]
+    for res in all_results:
+        if res[1] >= confidence_threshold:
+            results.append(res)
+        else:
+            low_confidence_results.append(res)
 
-    return results, frame_aug
+    return results, low_confidence_results, frame_aug
 
 
 def object_tracking(
@@ -132,13 +136,19 @@ def process_single_frame(
     if not ret:
         return True, None
 
-    results, frame_aug = object_detection(
+    results, low_confidence_results, frame_aug = object_detection(
         model, frame, num_aug, confidence_threshold
     )
     frame_after = object_tracking(
         frame_aug, results, deep_sort_tracker, classes=model.names
     )
-    tframe = TrackedFrame(frame_id, frame_aug, deep_sort_tracker.tracker)
+    tframe = TrackedFrame(
+        frame_id,
+        frame_aug,
+        deep_sort_tracker.tracker,
+        low_confidence_results,
+        class_names=model.names,
+    )
     tframe_collection.add_tracked_frame(tframe)
     end = datetime.datetime.now()
 
