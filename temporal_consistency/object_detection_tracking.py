@@ -30,15 +30,16 @@ from temporal_consistency.vis_utils import (
 )
 
 
-def get_detected_object(data, confidence_threshold):
-    """Filters out the detected object if the confidence is below the threshold.
+def transform_detection_predictions(data: list) -> list:
+    """Transforms raw detection data into a structured format.
 
     Args:
-        data (list): List of data for a detected object.
-        confidence_threshold (float): Confidence threshold for object detection.
+        data (list): List of raw data for a detected object. The expected format
+            includes bounding box coordinates, confidence score, and class ID.
 
     Returns:
-        list: List of data for a detected object if the confidence is above the thresh.
+        list: Transformed data for the detected object in the format
+            [ltwh, confidence, class_id].
     """
 
     confidence = data[4]
@@ -50,7 +51,9 @@ def get_detected_object(data, confidence_threshold):
     return res
 
 
-def object_detection(model, frame, num_aug=0, confidence_threshold=0.1):
+def object_detection(
+    model, frame: numpy.ndarray, num_aug=0, confidence_threshold=0.1
+):
     """Performs object detection on the given frame and returns the results.
 
     Args:
@@ -66,7 +69,7 @@ def object_detection(model, frame, num_aug=0, confidence_threshold=0.1):
         detections = model(frame_aug)[0]
 
     all_results = [
-        get_detected_object(data, confidence_threshold)
+        transform_detection_predictions(data)
         for data in detections.boxes.data.tolist()
     ]
     results = []
@@ -119,12 +122,12 @@ def object_tracking(
 
 def process_single_frame(
     model,
-    video_cap,
-    frame_id,
-    tframe_collection,
-    deep_sort_tracker,
-    num_aug,
-    confidence_threshold,
+    video_cap: cv2.VideoCapture,
+    frame_id: int,
+    tframe_collection: TrackedFrameCollection,
+    deep_sort_tracker: DeepSort,
+    num_aug: int,
+    confidence_threshold: float,
 ):
     """Processes a single frame from the video. This function does object
         detection and tracking. It also updates the TrackedFrameCollection.
@@ -140,14 +143,14 @@ def process_single_frame(
         confidence_threshold (float): Confidence threshold for object detection.
 
     Returns:
-        bool: True if the end of the video is reached, False otherwise.
+        numpy.ndarray: Frame with drawn bboxes around the confirmed tracked objects.
     """
 
     start = datetime.datetime.now()
 
     ret, frame = video_cap.read()
     if not ret:
-        return True, None
+        return None
 
     results, low_confidence_results, frame_aug = object_detection(
         model, frame, num_aug, confidence_threshold
@@ -229,7 +232,7 @@ def apply_detection_and_tracking(
             num_aug,
             confidence_threshold,
         )
-        if end_of_video:
+        if frame_after is None:
             break
 
         if frame_id >= 100:
@@ -239,6 +242,45 @@ def apply_detection_and_tracking(
         frame_id += 1
 
     tframe_collection.export_all_objects(out_video_fps=out_video_fps)
+
+    return tframe_collection
+
+
+def run_detection_and_tracking_pipeline(
+    model, deep_sort_tracker: DeepSort, args
+):
+    """Performs object detection and tracking on the given video.
+    It also outputs the tracked objects into separate videos.
+
+    Args:
+        model (YOLO): Model used for object detection.
+        deep_sort_tracker (DeepSort): Deep SORT tracker.
+        args (argparse.Namespace): Command line arguments obtained from config file.
+
+    Returns:
+        TrackedFrameCollection: Collection of tracked frames.
+    """
+
+    video_filepath = args.video_filepath
+    num_aug = args.num_aug
+    confidence_threshold = args.confidence
+    out_folder = args.out_folder
+    out_video_fps = args.out_video_fps
+
+    video_cap = cv2.VideoCapture(video_filepath)
+    output_filepath = video_filepath.replace(".mp4", "_output.mp4")
+    writer = create_video_writer(video_cap, output_filepath, fps=out_video_fps)
+
+    tframe_collection = apply_detection_and_tracking(
+        model,
+        deep_sort_tracker,
+        num_aug,
+        video_cap,
+        writer,
+        out_folder,
+        out_video_fps,
+        confidence_threshold,
+    )
 
     video_cap.release()
     writer.release()

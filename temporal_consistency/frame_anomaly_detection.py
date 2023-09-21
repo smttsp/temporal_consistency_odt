@@ -40,11 +40,13 @@ class TemporalAnomalyDetector:
 
         return None
 
-    def inspect_object_for_anomalies(self, object_id, track_info) -> bool:
+    def inspect_object_for_anomalies(
+        self, object_id: str, track_info: dict
+    ) -> bool:
         """Checks for potential anomalies for a single tracked object.
 
         Args:
-            object_id (int): Unique identifier for the object.
+            object_id (str): Unique identifier for the object.
             track_info (): Tracking information associated with the object.
 
         Returns:
@@ -59,7 +61,7 @@ class TemporalAnomalyDetector:
         )
         return anomaly_exist
 
-    def is_class_inconsistent(self, object_id, track_info) -> bool:
+    def is_class_inconsistent(self, object_id: str, track_info: dict) -> bool:
         """Verifies that an object maintains consistent classification across frames.
 
         Returns:
@@ -75,7 +77,9 @@ class TemporalAnomalyDetector:
 
         return len(all_classes) > 1
 
-    def is_object_missing_in_frames(self, object_id, track_info) -> bool:
+    def is_object_missing_in_frames(
+        self, object_id: str, track_info: dict
+    ) -> bool:
         """Checks if an object goes missing in intermediate frames.
 
         Returns:
@@ -92,7 +96,9 @@ class TemporalAnomalyDetector:
 
         return expected_size != size
 
-    def appears_only_in_single_frame(self, object_id, track_info) -> bool:
+    def appears_only_in_single_frame(
+        self, object_id: str, track_info: dict
+    ) -> bool:
         """Checks if an object only appears in a single frame, potentially
             indicating a false detection.
 
@@ -107,7 +113,7 @@ class TemporalAnomalyDetector:
 
         return len(track_info) == 1
 
-    def has_low_iou(self, object_id, track_info) -> bool:
+    def has_low_iou(self, object_id: str, track_info: dict) -> bool:
         """Assesses if the Intersection over Union (IoU) is below a threshold,
             indicating potential tracking issues.
 

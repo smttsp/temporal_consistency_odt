@@ -7,6 +7,7 @@ from this list of possible options and applies them to an input image.
 
 import random
 
+import numpy
 from albumentations import (
     Blur,
     ChannelShuffle,
@@ -59,7 +60,7 @@ def get_aug_list():
     ]
 
 
-def get_random_augmentation(image, num_aug=0):
+def get_random_augmentation(image: numpy.ndarray, num_aug=0):
     """Pick random augmentations from the list and apply them to the image.
     The number of augmentations to apply is specified by num_aug.
     """

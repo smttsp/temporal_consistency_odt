@@ -8,12 +8,15 @@ import cv2
 EPS = sys.float_info.epsilon
 
 
-def create_video_writer(video_cap, output_filename, fps=None):
+def create_video_writer(
+    video_cap: cv2.VideoCapture, output_filename: str, fps: float = None
+):
     """Create a video writer object to write the output video
 
     Args:
         video_cap (cv2.VideoCapture): Video capture object
         output_filename (str): Output filename
+        fps (float, optional): Frames per second. Defaults to None.
 
     Returns:
         cv2.VideoWriter: Video writer object
@@ -33,7 +36,7 @@ def create_video_writer(video_cap, output_filename, fps=None):
     return writer
 
 
-def compute_iou(bbox1, bbox2):
+def compute_iou(bbox1: list[int], bbox2: list[int]):
     """Compute the intersection over union (IoU) of two bounding boxes.
 
     Args:
@@ -80,7 +83,7 @@ def get_runtime_str():
     return runtime_str
 
 
-def ltwh_to_ltrb(ltwh):
+def ltwh_to_ltrb(ltwh: list[int]):
     """Converts bounding box coordinates from [left, top, width, height] to
     [left, top, right, bottom].
     """
@@ -91,7 +94,7 @@ def ltwh_to_ltrb(ltwh):
     return ltrb
 
 
-def ltrb_to_ltwh(ltrb):
+def ltrb_to_ltwh(ltrb: list[int]):
     """Converts bounding box coordinates from [left, top, right, bottom] to
     [left, top, width, height].
     """

@@ -17,6 +17,7 @@ import copy
 import os
 from collections import defaultdict
 
+import cv2
 import numpy
 
 from temporal_consistency.utils import create_video_writer, ltwh_to_ltrb
@@ -47,20 +48,25 @@ class TrackedFrame:
     """A single frame together with its tracked objects."""
 
     def __init__(
-        self, frame_id, frame, tracker, low_confidence_results, class_names
+        self,
+        frame_id: int,
+        frame: numpy.ndarray,
+        tracker,
+        low_confidence_results: list[list],
+        class_names: dict,
     ):
         self.frame_id = frame_id
         self.tracker = copy.deepcopy(tracker)
         self.frame = frame
         self.num_object = len(tracker.tracks)
-        # self.class_names = class_names
         self.object_ids = self.get_object_ids()
-        # self.low_confidence_results = low_confidence_results
         self.low_confidence_objects = self.get_low_confidence_objects(
             low_confidence_results, class_names
         )
 
-    def get_low_confidence_objects(self, low_confidence_results, class_names):
+    def get_low_confidence_objects(
+        self, low_confidence_results: list[list], class_names: dict
+    ):
         """Returns a list of low confidence objects."""
 
         low_confidence_objects = []
@@ -84,7 +90,12 @@ class TrackedFrame:
 class TrackedFrameCollection:
     """A collection of TrackedFrames containing frames and the tracked objects."""
 
-    def __init__(self, video_cap, class_names, out_folder):
+    def __init__(
+        self,
+        video_cap: cv2.VideoCapture,
+        class_names: dict,
+        out_folder: str,
+    ):
         self.video_cap = video_cap
         self.out_folder = out_folder
         self.class_names = class_names
@@ -97,7 +108,7 @@ class TrackedFrameCollection:
         self.tracked_frames.append(tracked_frame)
         self.update_all_objects_dict(tracked_frame)
 
-    def update_all_objects_dict(self, tracked_frame):
+    def update_all_objects_dict(self, tracked_frame: TrackedFrame):
         """Updates the dictionary of objects. Each key is an object ID
         and the value is a dictionary of frame IDs and predictions.
         """
@@ -113,7 +124,7 @@ class TrackedFrameCollection:
             cur_dict = {tracked_frame.frame_id: cur_pred}
             self.all_objects[track.track_id].update(cur_dict)
 
-    def export_all_objects(self, out_video_fps):
+    def export_all_objects(self, out_video_fps: int):
         """Exports all objects to individual videos."""
 
         os.makedirs(self.out_folder, exist_ok=True)
@@ -125,7 +136,7 @@ class TrackedFrameCollection:
             )
             self.export_object(writer, object_id)
 
-    def export_object(self, writer, object_id):
+    def export_object(self, writer: cv2.VideoWriter, object_id: str):
         """Exports a single object to a video file."""
 
         a_dict = self.all_objects[object_id]
