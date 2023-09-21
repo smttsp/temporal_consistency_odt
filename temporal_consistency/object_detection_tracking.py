@@ -168,39 +168,59 @@ def process_single_frame(
     total_time = (end - start).total_seconds() * 1000
     draw_fps_on_frame(frame_after, total_time)
 
-    return False, frame_after
+    return frame_after
 
 
-def object_detection_and_tracking(model, deep_sort_tracker, args):
-    """Performs object detection and tracking on the given video.
-    It also outputs the tracked objects into separate videos.
+# def apply_detection_and_tracking(
+#     model,
+#     deep_sort_tracker,
+#     num_aug,
+#     video_cap,
+#     writer,
+#     out_folder,
+#     out_video_fps,
+#     confidence_threshold,
+# ):
+
+
+def apply_detection_and_tracking(
+    model,
+    deep_sort_tracker: DeepSort,
+    num_aug: int,
+    video_cap: cv2.VideoCapture,
+    writer: cv2.VideoWriter,
+    out_folder: str,
+    out_video_fps: int,
+    confidence_threshold: float,
+) -> TrackedFrameCollection:
+    """Applies object detection and tracking on video frames using
+    the provided model and tracker.
+
+    This function processes a video by detecting objects in its frames and
+    then tracking those objects using Deep SORT. The results, including bboxes,
+    are written to a video. The tracked objects are also saved as separate videos.
 
     Args:
         model (YOLO): Model used for object detection.
-        deep_sort_tracker (DeepSort): Deep SORT tracker.
-        args (argparse.Namespace): Command line arguments obtained from config file.
+        deep_sort_tracker (DeepSort): Deep SORT tracker instance for object tracking.
+        num_aug (int): Number of augmentations to apply to the frame.
+        video_cap (cv2.VideoCapture): Video capture object to read frames from.
+        writer (cv2.VideoWriter): Video writer object to output the processed video.
+        out_folder (str): Output folder path where tracked objects will be saved.
+        out_video_fps (int): Frames per second for the output video.
+        confidence_threshold (float): Confidence threshold for object detection.
 
     Returns:
-        TrackedFrameCollection: Collection of tracked frames.
+        TrackedFrameCollection: A collection of frames with tracking information.
     """
-
-    video_filepath = args.video_filepath
-    num_aug = args.num_aug
-    confidence_threshold = args.confidence
-    out_folder = args.out_folder
-    out_video_fps = args.out_video_fps
-    video_cap = cv2.VideoCapture(video_filepath)
-    output_filepath = video_filepath.replace(".mp4", "_output.mp4")
-
-    writer = create_video_writer(video_cap, output_filepath, fps=out_video_fps)
 
     tframe_collection = TrackedFrameCollection(
         video_cap=video_cap, class_names=model.names, out_folder=out_folder
     )
-    frame_id = 0
 
+    frame_id = 0
     while True:
-        end_of_video, frame_after = process_single_frame(
+        frame_after = process_single_frame(
             model,
             video_cap,
             frame_id,

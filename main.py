@@ -16,7 +16,7 @@ from ultralytics import YOLO
 
 from temporal_consistency.frame_anomaly_detection import TemporalAnomalyDetector
 from temporal_consistency.object_detection_tracking import (
-    object_detection_and_tracking,
+    run_detection_and_tracking_pipeline,
 )
 from temporal_consistency.utils import get_runtime_str
 
