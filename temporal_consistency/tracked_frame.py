@@ -31,12 +31,36 @@ class Prediction:
 class TrackedFrame:
     """A single frame together with its tracked objects."""
 
-    def __init__(self, frame_id, frame, tracker):
+    def __init__(
+        self, frame_id, frame, tracker, low_confidence_results, class_names
+    ):
         self.frame_id = frame_id
         self.tracker = copy.deepcopy(tracker)
         self.frame = frame
         self.num_object = len(tracker.tracks)
+        self.class_names = class_names
         self.object_ids = self.get_object_ids()
+        # self.low_confidence_results = low_confidence_results
+        self.low_confidence_objects = self.get_low_confidence_objects(
+            low_confidence_results
+        )
+
+    def get_low_confidence_objects(self, low_confidence_results):
+        """Returns a list of low confidence objects."""
+
+        low_confidence_objects = []
+
+        for res in low_confidence_results:
+            cur_pred = Prediction(
+                frame_id=self.frame_id,
+                ltrb=res[0],
+                confidence=res[1],
+                class_id=res[2],
+                class_names=self.class_names,
+            )
+            low_confidence_objects.append(cur_pred)
+
+        return low_confidence_objects
 
     def get_object_ids(self):
         return set(t.track_id for t in self.tracker.tracks)
