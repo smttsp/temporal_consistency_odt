@@ -1,3 +1,18 @@
+"""This module defines three classes: Prediction, TrackedFrame, TrackedFrameCollection
+for managing object tracking in video frames.
+
+- `Prediction` class encapsulates information about a detected object in a single frame,
+including its bounding box, confidence score, and class.
+- `TrackedFrame` class holds information for a single video frame, capturing all
+its tracked objects along with some low-confidence detections.
+- `TrackedFrameCollection` serves as a collection of TrackedFrames. It facilitates
+operations such as adding new tracked frames to the collection, and exporting
+the objects to individual videos.
+
+Together, they provide a comprehensive structure for managing and exporting
+object tracking data.
+"""
+
 import copy
 import os
 from collections import defaultdict

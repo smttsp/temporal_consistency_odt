@@ -1,3 +1,10 @@
+"""This module provides functions to generate a list of image augmentations
+using the albumentations library and to apply a random subset of those
+augmentations to a given image. Depending on the `num_aug` input, the
+`get_random_augmentation` function selects a specified number of augmentations
+ from this list of possible options and applies them to an input image.
+"""
+
 import random
 
 from albumentations import (

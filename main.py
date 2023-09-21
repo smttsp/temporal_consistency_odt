@@ -1,3 +1,12 @@
+"""This script is an entrypoint for performing object detection and tracking
+on a given video using YOLO and Deep Sort. It also includes options for
+augmenting frames and adjusts tracking based on configurable settings like
+confidence threshold and max age for tracks.
+
+Detected temporal anomalies in tracking are logged for further analysis.
+They will later be used for model training and fine-tuning.
+"""
+
 import os
 
 import configargparse

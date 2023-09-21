@@ -1,3 +1,16 @@
+"""This module handles object detection and tracking in video sequences.
+It performs
+
+- real-time object detection using a YOLO model
+- object tracking using Deep SORT.
+
+The frames can be optionally augmented before processing which is
+for helping with robustness of the object detection model (i.e., finding failures).
+
+The output includes visualization of object tracking (one video with bboxes and
+one video per object with the object's track).
+"""
+
 import datetime
 
 import cv2

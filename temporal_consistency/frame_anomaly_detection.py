@@ -1,3 +1,9 @@
+"""This module contains `TemporalAnomalyDetector` class for identifying inconsistencies
+in object tracking across a sequence of frames. It checks for issues like classification
+inconsistencies, missing objects in frames, single-frame appearances, and low
+Intersection-over-Union (IoU) values. Detected anomalies are stored in a dictionary.
+"""
+
 import sys
 from collections import defaultdict
 
