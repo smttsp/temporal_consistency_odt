@@ -8,6 +8,20 @@ from temporal_consistency.utils import create_video_writer
 from temporal_consistency.vis_utils import put_text_on_upper_corner
 
 
+def ltwh_to_ltrb(ltwh):
+    ltrb = copy.deepcopy(ltwh)
+    ltrb[2] += ltrb[0]
+    ltrb[3] += ltrb[1]
+    return ltrb
+
+
+def ltrb_to_ltwh(ltrb):
+    ltwh = copy.deepcopy(ltrb)
+    ltwh[2] -= ltwh[0]
+    ltwh[3] -= ltwh[1]
+    return ltwh
+
+
 class Prediction:
     """Single prediction for an object. Contains the bounding box coordinates,
     confidence, class ID, and class name.
@@ -38,14 +52,14 @@ class TrackedFrame:
         self.tracker = copy.deepcopy(tracker)
         self.frame = frame
         self.num_object = len(tracker.tracks)
-        self.class_names = class_names
+        # self.class_names = class_names
         self.object_ids = self.get_object_ids()
         # self.low_confidence_results = low_confidence_results
         self.low_confidence_objects = self.get_low_confidence_objects(
-            low_confidence_results
+            low_confidence_results, class_names
         )
 
-    def get_low_confidence_objects(self, low_confidence_results):
+    def get_low_confidence_objects(self, low_confidence_results, class_names):
         """Returns a list of low confidence objects."""
 
         low_confidence_objects = []
@@ -53,10 +67,10 @@ class TrackedFrame:
         for res in low_confidence_results:
             cur_pred = Prediction(
                 frame_id=self.frame_id,
-                ltrb=res[0],
+                ltrb=ltwh_to_ltrb(res[0]),
                 confidence=res[1],
                 class_id=res[2],
-                class_names=self.class_names,
+                class_names=class_names,
             )
             low_confidence_objects.append(cur_pred)
 
