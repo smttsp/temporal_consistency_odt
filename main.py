@@ -89,7 +89,7 @@ def main(args):
     model = YOLO("yolov8n.pt")
     deep_sort_tracker = DeepSort(max_age=args.max_age)
 
-    tframe_collection = object_detection_and_tracking(
+    tframe_collection = run_detection_and_tracking_pipeline(
         model, deep_sort_tracker, args
     )
     TemporalAnomalyDetector(tframe_collection)
