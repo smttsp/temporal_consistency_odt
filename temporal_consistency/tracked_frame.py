@@ -19,9 +19,8 @@ from collections import defaultdict
 
 import numpy
 
-from temporal_consistency.utils import create_video_writer
+from temporal_consistency.utils import create_video_writer, ltwh_to_ltrb
 from temporal_consistency.vis_utils import put_text_on_upper_corner
-from temporal_consistency.utils import ltwh_to_ltrb
 
 
 class Prediction:
