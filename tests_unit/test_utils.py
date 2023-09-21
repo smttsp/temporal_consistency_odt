@@ -1,7 +1,7 @@
 import pytest
 
 from temporal_consistency.utils import compute_iou, get_runtime_str
-
+from temporal_consistency.utils import ltwh_to_ltrb, ltrb_to_ltwh
 
 EPS = 1e-10
 
@@ -33,3 +33,25 @@ def test_get_runtime_str():
     runtime_str = get_runtime_str()
     assert len(runtime_str) == 15
     assert runtime_str[8] == "-"
+
+
+@pytest.mark.parametrize(
+    "ltrb, ltwh",
+    [
+        ([1, 2, 3, 4], [1, 2, 2, 2]),
+        ([1, 2, 4, 6], [1, 2, 3, 4]),
+    ],
+)
+def test_ltwh_to_ltrb(ltrb, ltwh):
+    assert ltwh_to_ltrb(ltwh) == ltrb
+
+
+@pytest.mark.parametrize(
+    "ltrb, ltwh",
+    [
+        ([1, 2, 8, 6], [1, 2, 7, 4]),
+        ([1, 2, 4, 6], [1, 2, 3, 4]),
+    ],
+)
+def test_ltrb_to_ltwh(ltrb, ltwh):
+    assert ltrb_to_ltwh(ltrb) == ltwh
