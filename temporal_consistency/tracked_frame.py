@@ -6,20 +6,7 @@ import numpy
 
 from temporal_consistency.utils import create_video_writer
 from temporal_consistency.vis_utils import put_text_on_upper_corner
-
-
-def ltwh_to_ltrb(ltwh):
-    ltrb = copy.deepcopy(ltwh)
-    ltrb[2] += ltrb[0]
-    ltrb[3] += ltrb[1]
-    return ltrb
-
-
-def ltrb_to_ltwh(ltrb):
-    ltwh = copy.deepcopy(ltrb)
-    ltwh[2] -= ltwh[0]
-    ltwh[3] -= ltwh[1]
-    return ltwh
+from temporal_consistency.utils import ltwh_to_ltrb
 
 
 class Prediction:

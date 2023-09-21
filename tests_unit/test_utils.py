@@ -1,7 +1,12 @@
 import pytest
 
-from temporal_consistency.utils import compute_iou, get_runtime_str
-from temporal_consistency.utils import ltwh_to_ltrb, ltrb_to_ltwh
+from temporal_consistency.utils import (
+    compute_iou,
+    get_runtime_str,
+    ltrb_to_ltwh,
+    ltwh_to_ltrb,
+)
+
 
 EPS = 1e-10
 

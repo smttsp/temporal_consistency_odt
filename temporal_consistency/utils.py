@@ -1,3 +1,4 @@
+import copy
 import sys
 from datetime import datetime
 
@@ -77,3 +78,25 @@ def get_runtime_str():
         .split(".")[0]
     )
     return runtime_str
+
+
+def ltwh_to_ltrb(ltwh):
+    """Converts bounding box coordinates from [left, top, width, height] to
+    [left, top, right, bottom].
+    """
+
+    ltrb = copy.deepcopy(ltwh)
+    ltrb[2] += ltrb[0]
+    ltrb[3] += ltrb[1]
+    return ltrb
+
+
+def ltrb_to_ltwh(ltrb):
+    """Converts bounding box coordinates from [left, top, right, bottom] to
+    [left, top, width, height].
+    """
+
+    ltwh = copy.deepcopy(ltrb)
+    ltwh[2] -= ltwh[0]
+    ltwh[3] -= ltwh[1]
+    return ltwh

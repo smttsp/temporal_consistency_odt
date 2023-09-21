@@ -95,7 +95,7 @@ class TemporalAnomalyDetector:
         """
 
         if len(track_info) == 1:
-            log = f"{object_id=} occurs only in one frame, may indicate a false detection"
+            log = f"{object_id=} occurs only in one frame, may indicate false detection"
             logger.info(log)
             self.anomalies[object_id].append(log)
 
