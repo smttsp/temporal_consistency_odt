@@ -6,8 +6,8 @@ This repository harnesses object detection and tracking techniques to identify i
 and anomalies in video sequences.
 By identifying these discrepancies, we can capture valuable data to enhance our object
 detection model. 
-These identified anomalies can subsequently be used in the training, validation, and 
-testing phases for future iterations of the model.
+These anomalies can be annotated and integrated into the training, validation, and testing phases 
+for future model iterations. Consequently, our tool serves as a core component in an active learning pipeline
 
 The system identifies the following anomalies:
 
