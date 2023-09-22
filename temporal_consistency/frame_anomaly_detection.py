@@ -20,22 +20,22 @@ EPS = sys.float_info.epsilon
 class TemporalAnomalyDetector:
     """Detects anomalies in the temporal consistency of the tracked objects."""
 
-    def __init__(self, frame_collection: TrackedFrameCollection):
+    def __init__(self, tframe_collection: TrackedFrameCollection):
         """Initializes the TemporalAnomalyDetector.
 
         Args:
-            frame_collection (TrackedFrameCollection): A collection of frames
+            tframe_collection (TrackedFrameCollection): A collection of frames
                 containing tracked objects.
         """
 
-        self.frame_collection = frame_collection
+        self.tframe_collection = tframe_collection
         self.anomalies = defaultdict(list)
         self.scan_for_anomalies()
 
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""
 
-        for object_id, track_info in self.frame_collection.all_objects.items():
+        for object_id, track_info in self.tframe_collection.all_objects.items():
             self.inspect_object_for_anomalies(object_id, track_info)
 
         return None
@@ -46,8 +46,9 @@ class TemporalAnomalyDetector:
         """Checks for potential anomalies for a single tracked object.
 
         Args:
-            object_id (str): Unique identifier for the object.
-            track_info (): Tracking information associated with the object.
+            object_id (str): Unique identifier of the tracked object.
+            track_info (dict): A dictionary containing frame IDs as keys and prediction
+                objects as values, where each prediction has a 'class_name' attribute.
 
         Returns:
             bool: True if anomalies are detected, False otherwise.
@@ -114,7 +115,10 @@ class TemporalAnomalyDetector:
         if size != expected_size:
             log = f"{object_id=} is missing in {expected_size - size} frames"
             logger.info(log)
-            self.anomalies[object_id].append(log)
+
+            # sampling only one frame where the object is missing
+            frame_ids = set(range(mn_idx, mx_idx + 1)).difference(keys)
+            self.anomalies[object_id].append(list(frame_ids)[0])
 
         return expected_size != size
 
@@ -131,7 +135,8 @@ class TemporalAnomalyDetector:
         if len(track_info) == 1:
             log = f"{object_id=} occurs only in one frame, may indicate false detection"
             logger.info(log)
-            self.anomalies[object_id].append(log)
+            frame_id = list(track_info.keys())[0]
+            self.anomalies[object_id].append(frame_id)
 
         return len(track_info) == 1
 
@@ -140,7 +145,7 @@ class TemporalAnomalyDetector:
             indicating potential tracking issues.
 
         Returns:
-            bool: True if the IoU is low, False otherwise.
+            bool: True if there is low IoU, False otherwise.
         """
 
         keys = sorted(list(track_info.keys()))
@@ -158,7 +163,7 @@ class TemporalAnomalyDetector:
                     f"between {frame_i=} and {frame_j=}"
                 )
                 logger.info(log)
-                self.anomalies[object_id].append(log)
+                self.anomalies[object_id].append(frame_i)
                 flag = True
 
         return flag
