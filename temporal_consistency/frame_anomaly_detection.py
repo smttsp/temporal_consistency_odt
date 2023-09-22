@@ -4,9 +4,10 @@ inconsistencies, missing objects in frames, single-frame appearances, and low
 Intersection-over-Union (IoU) values. Detected anomalies are stored in a dictionary.
 """
 
+import os
 import sys
 from collections import defaultdict
-
+import cv2
 from loguru import logger
 
 from temporal_consistency.tracked_frame import TrackedFrameCollection
@@ -15,6 +16,15 @@ from temporal_consistency.utils import compute_iou
 
 MIN_IOU_THRESH = 0.5
 EPS = sys.float_info.epsilon
+
+
+def export_list_of_objects(object_filepath, low_conf_objects):
+    for obj in low_conf_objects:
+        bbox = obj.ltrb
+        class_name = obj.class_name
+        confidence = obj.confidence
+        with open(object_filepath, "a") as f:
+            f.write(f"{class_name} {confidence} {' '.join(map(str, bbox))}\n")
 
 
 class TemporalAnomalyDetector:
@@ -43,6 +53,35 @@ class TemporalAnomalyDetector:
 
         1 + 3 can be used to help with labeling the data (i.e. model assisted labeling)
         """
+
+        frame_ids = set(x[0] for x in self.anomalies.values())
+
+        out_folder = self.tframe_collection.out_folder
+        os.makedirs(out_folder, exist_ok=True)
+
+        for frame_id in frame_ids:
+            # 1. Raw frame
+            frame = self.tframe_collection.get_frame(frame_id)
+            frame_filepath = os.path.join(out_folder, f"frame{frame_id}.jpg")
+            cv2.imwrite(frame_filepath, frame)
+
+            # 2. Frame with bboxes
+            (
+                high_conf_objects,
+                low_conf_objects,
+            ) = self.tframe_collection.get_frame_predictions(frame_id)
+
+            # 3. Bboxes as txt
+            object_filepath = frame_filepath.replace(".jpg", ".txt")
+            export_list_of_objects(object_filepath, low_conf_objects)
+            export_list_of_objects(object_filepath, high_conf_objects)
+
+            # log_filepath = os.path.join(
+            #     self.tframe_collection.out_folder, f"{object_id}_anomalies.log"
+            # )
+            # with open(log_filepath, "w") as f:
+            #     f.write("\n".join(logs))
+            pass
 
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""
