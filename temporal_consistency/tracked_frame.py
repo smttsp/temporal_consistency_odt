@@ -164,3 +164,17 @@ class TrackedFrameCollection:
             writer.write(black_frame)
 
         writer.release()
+
+    def get_frame(self, frame_id: int):
+        """Returns a frame with the given frame ID."""
+
+        return self.tracked_frames[frame_id]
+
+    def get_frame_predictions(self, frame_id: int):
+        """Returns the predictions for a single frame."""
+
+        high_confidence_objects = self.all_frames[frame_id]
+        low_confidence_objects = self.tracked_frames[
+            frame_id
+        ].low_confidence_objects
+        return high_confidence_objects, low_confidence_objects
