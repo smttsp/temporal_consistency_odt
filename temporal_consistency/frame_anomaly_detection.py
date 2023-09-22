@@ -31,6 +31,18 @@ class TemporalAnomalyDetector:
         self.tframe_collection = tframe_collection
         self.anomalies = defaultdict(list)
         self.scan_for_anomalies()
+        self.export_anomalies()
+
+    def export_anomalies(self):
+        """Exports the frames where there is an anomaly for at least one object.
+        The exported files are:
+        1. Raw frame as frame{frame_id}.jpg
+        2. Frame with bboxes as frame{frame_id}_bbox.jpg. The green bboxes are the
+            tracked objects, and the red bboxes are the low-confidence detections.
+        3. a file containing all the bboxes in the frame as frame{frame_id}_bbox.txt
+
+        1 + 3 can be used to help with labeling the data (i.e. model assisted labeling)
+        """
 
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""
@@ -75,7 +87,6 @@ class TemporalAnomalyDetector:
             log = f"{object_id=} occurs as the following classes: {all_classes}"
             logger.info(log)
             self.get_frame_id_for_class_inconsistency(object_id, track_info)
-            self.anomalies[object_id].append(log)
 
         return len(all_classes) > 1
 
