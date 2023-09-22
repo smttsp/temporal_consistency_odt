@@ -3,7 +3,6 @@ in object tracking across a sequence of frames. It checks for issues like classi
 inconsistencies, missing objects in frames, single-frame appearances, and low
 Intersection-over-Union (IoU) values. Detected anomalies are stored in a dictionary.
 """
-
 import os
 import sys
 from collections import defaultdict
@@ -39,7 +38,7 @@ class TemporalAnomalyDetector:
         """
 
         self.tframe_collection = tframe_collection
-        self.anomalies = defaultdict(list)
+        self.anomalies: defaultdict = defaultdict(list)
         self.scan_for_anomalies()
         self.export_anomalies()
 

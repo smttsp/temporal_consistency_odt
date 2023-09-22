@@ -113,9 +113,9 @@ class TrackedFrameCollection:
         self.out_folder = out_folder
 
         self.class_names = class_names
-        self.tracked_frames = []
-        self.all_objects = defaultdict(dict)
-        self.all_frames = defaultdict(list)
+        self.tracked_frames: list = []
+        self.all_objects: defaultdict = defaultdict(dict)
+        self.all_frames: defaultdict = defaultdict(list)
 
     def add_tracked_frame(self, tracked_frame: TrackedFrame):
         """Adds a tracked frame to the collection."""

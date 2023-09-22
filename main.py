@@ -86,7 +86,10 @@ def parse_args():
 def main(args):
     runtime_str = get_runtime_str()
     args.out_folder = os.path.join(args.out_folder, runtime_str)
-    logger.add(os.path.join(args.out_folder, f"output.log"))
+    os.makedirs(args.out_folder, exist_ok=True)
+
+    logfile = os.path.join(args.out_folder, "output.log")
+    logger.add(logfile)
 
     model = YOLO("yolov8n.pt")
     deep_sort_tracker = DeepSort(max_age=args.max_age)
