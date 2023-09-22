@@ -54,7 +54,7 @@ class Prediction:
     def to_str(self):
         confidence = round(self.confidence, 4) if self.confidence else None
         bbox = " ".join(map(str, self.ltrb))
-        return f"{self.class_name}, {bbox}, {round(confidence, 4)}"
+        return f"{self.class_name}, {bbox}, {confidence}"
 
 
 class TrackedFrame:
@@ -111,6 +111,7 @@ class TrackedFrameCollection:
     ):
         self.video_cap = video_cap
         self.out_folder = out_folder
+
         self.class_names = class_names
         self.tracked_frames = []
         self.all_objects = defaultdict(dict)

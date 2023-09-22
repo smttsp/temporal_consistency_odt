@@ -21,27 +21,24 @@ EPS = sys.float_info.epsilon
 
 
 def export_list_of_objects(object_filepath, object_list):
-    for obj in object_list:
-        with open(object_filepath, "a") as f:
+    with open(object_filepath, "a") as f:
+        for obj in object_list:
             f.write(f"{obj.to_str()}\n")
+        f.write("\n")
 
 
 class TemporalAnomalyDetector:
     """Detects anomalies in the temporal consistency of the tracked objects."""
 
-    def __init__(
-        self, tframe_collection: TrackedFrameCollection, runtime_str: str
-    ):
+    def __init__(self, tframe_collection: TrackedFrameCollection):
         """Initializes the TemporalAnomalyDetector.
 
         Args:
             tframe_collection (TrackedFrameCollection): A collection of frames
                 containing tracked objects.
-            runtime_str (str): A string containing the datetime information.
         """
 
         self.tframe_collection = tframe_collection
-        self.runtime_str = runtime_str
         self.anomalies = defaultdict(list)
         self.scan_for_anomalies()
         self.export_anomalies()
@@ -194,9 +191,7 @@ class TemporalAnomalyDetector:
 
         frame_ids = set(x[0] for x in self.anomalies.values())
 
-        out_folder = os.path.join(
-            self.tframe_collection.out_folder, self.runtime_str
-        )
+        out_folder = os.path.join(self.tframe_collection.out_folder)
         os.makedirs(out_folder, exist_ok=True)
 
         for frame_id in frame_ids:

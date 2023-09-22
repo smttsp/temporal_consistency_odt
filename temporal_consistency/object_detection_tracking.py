@@ -206,7 +206,9 @@ def apply_detection_and_tracking(
     """
 
     tframe_collection = TrackedFrameCollection(
-        video_cap=video_cap, class_names=model.names, out_folder=out_folder
+        video_cap=video_cap,
+        class_names=model.names,
+        out_folder=out_folder,
     )
 
     frame_id = 0
