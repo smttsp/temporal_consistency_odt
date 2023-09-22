@@ -9,6 +9,6 @@ from distutils.core import setup
 
 setup(
     name="temporal_consistency",
-    version="1.0.1",
+    version="1.2.0",
     packages=["temporal_consistency"],
 )

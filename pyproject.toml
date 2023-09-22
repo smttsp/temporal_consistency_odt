@@ -23,6 +23,7 @@ ruff = "^0.0.290"
 black = "^23.9.1"
 pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
+mypy = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -66,7 +67,6 @@ default_section = "THIRDPARTY"
 
 [tool.pytest.ini_options]
 minversion = "6.1"
-addopts = "--cov"
-testpaths = [
-    "tests_unit",
-]
+addopts = ["--cov=temporal_consistency", "--cov-report=term-missing", "--cov"]
+testpaths = ["tests_unit"]
+filterwarnings = "ignore::DeprecationWarning"
