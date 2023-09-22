@@ -18,13 +18,10 @@ MIN_IOU_THRESH = 0.5
 EPS = sys.float_info.epsilon
 
 
-def export_list_of_objects(object_filepath, low_conf_objects):
-    for obj in low_conf_objects:
-        bbox = obj.ltrb
-        class_name = obj.class_name
-        confidence = obj.confidence
+def export_list_of_objects(object_filepath, object_list):
+    for obj in object_list:
         with open(object_filepath, "a") as f:
-            f.write(f"{class_name} {confidence} {' '.join(map(str, bbox))}\n")
+            f.write(f"{obj.to_str()}\n")
 
 
 class TemporalAnomalyDetector:
@@ -75,13 +72,6 @@ class TemporalAnomalyDetector:
             object_filepath = frame_filepath.replace(".jpg", ".txt")
             export_list_of_objects(object_filepath, low_conf_objects)
             export_list_of_objects(object_filepath, high_conf_objects)
-
-            # log_filepath = os.path.join(
-            #     self.tframe_collection.out_folder, f"{object_id}_anomalies.log"
-            # )
-            # with open(log_filepath, "w") as f:
-            #     f.write("\n".join(logs))
-            pass
 
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""

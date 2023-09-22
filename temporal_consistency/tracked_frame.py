@@ -43,6 +43,18 @@ class Prediction:
         self.class_id = class_id
         self.class_name = class_names.get(class_id, None)
 
+    def to_str_all(self):
+        confidence = round(self.confidence, 4)
+        bbox = " ".join(map(str, self.ltrb))
+        return (
+            f"{self.frame_id=}, {self.class_id=}, {self.class_name=}, "
+            f"{bbox}, {confidence=}"
+        )
+
+    def to_str(self):
+        bbox = " ".join(map(str, self.ltrb))
+        return f"{self.class_name}, {bbox}, {round(self.confidence, 4)}"
+
 
 class TrackedFrame:
     """A single frame together with its tracked objects."""
@@ -168,7 +180,7 @@ class TrackedFrameCollection:
     def get_frame(self, frame_id: int):
         """Returns a frame with the given frame ID."""
 
-        return self.tracked_frames[frame_id]
+        return self.tracked_frames[frame_id].frame
 
     def get_frame_predictions(self, frame_id: int):
         """Returns the predictions for a single frame."""
