@@ -22,15 +22,17 @@ def put_text_on_upper_corner(frame, text):
     return None
 
 
-def draw_class_name(frame, ltrb_bbox, track_id, class_name):
+def draw_class_name(frame, ltrb_bbox, track_id, class_name, bbox_color=GREEN):
     """Draws the class name and track id on the frame. The class name and track
     id are drawn on top of the bounding box.
     """
 
     x_min, y_min, x_max, y_max = map(int, ltrb_bbox)
     # draw the bounding box and the track id
-    cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), GREEN, 2)
-    cv2.rectangle(frame, (x_min, y_min - 20), (x_min + 60, y_min), GREEN, -1)
+    cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), bbox_color, 2)
+    cv2.rectangle(
+        frame, (x_min, y_min - 20), (x_min + 60, y_min), bbox_color, -1
+    )
     new_text = f"{track_id}: {class_name}"
     cv2.putText(
         img=frame,
