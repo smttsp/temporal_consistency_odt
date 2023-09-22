@@ -70,6 +70,11 @@ https://github.com/smttsp/temporal_consistency_odt/assets/4594945/36507731-c401-
 
 ### Prerequisite: `pyenv`
 
+`pyenv` simplifies Python version management, enabling you to seamlessly switch between 
+Python versions for different project requirements.
+
+
+
 https://github.com/pyenv/pyenv-installer
 
 On macOS you can use [brew](https://brew.sh), but you may need to grab the `--HEAD` version for the latest:
@@ -98,6 +103,9 @@ continue with installation? (y/N) N
 ```
 
 ### Prerequisite: `direnv`
+
+`direnv` streamlines environment variable management, allowing you to isolate 
+project-specific configurations and dependencies within your development environment.
 
 https://direnv.net/docs/installation.html
 
