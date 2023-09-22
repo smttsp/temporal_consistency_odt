@@ -101,6 +101,7 @@ class TrackedFrameCollection:
         self.class_names = class_names
         self.tracked_frames = []
         self.all_objects = defaultdict(dict)
+        self.all_frames = defaultdict(list)
 
     def add_tracked_frame(self, tracked_frame: TrackedFrame):
         """Adds a tracked frame to the collection."""
@@ -114,6 +115,7 @@ class TrackedFrameCollection:
         """
 
         for track in tracked_frame.tracker.tracks:
+            frame_id = tracked_frame.frame_id
             cur_pred = Prediction(
                 frame_id=tracked_frame.frame_id,
                 ltrb=list(map(int, track.to_ltrb())),
@@ -123,6 +125,7 @@ class TrackedFrameCollection:
             )
             cur_dict = {tracked_frame.frame_id: cur_pred}
             self.all_objects[track.track_id].update(cur_dict)
+            self.all_frames[frame_id].append(cur_pred)
 
     def export_all_objects(self, out_video_fps: int):
         """Exports all objects to individual videos."""
