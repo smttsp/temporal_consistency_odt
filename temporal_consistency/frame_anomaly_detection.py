@@ -65,7 +65,7 @@ class TemporalAnomalyDetector:
         """Verifies that an object maintains consistent classification across frames.
 
         Returns:
-            bool: True if the class is consistent, False if there are inconsistencies.
+            bool: False if the class is consistent, True if there are inconsistencies.
         """
 
         all_classes = set(v.class_name for v in track_info.values())
@@ -73,9 +73,31 @@ class TemporalAnomalyDetector:
         if len(all_classes) > 1:
             log = f"{object_id=} occurs as the following classes: {all_classes}"
             logger.info(log)
+            self.get_frame_id_for_class_inconsistency(object_id, track_info)
             self.anomalies[object_id].append(log)
 
         return len(all_classes) > 1
+
+    def get_frame_id_for_class_inconsistency(self, object_id, track_info):
+        """Find the first frame ID where a class inconsistency occurs in
+            a tracking sequence.
+
+        Returns:
+            None: The function modifies the 'anomalies' attribute of the object,
+                appending frame IDs where class inconsistency is detected.
+        """
+
+        prev_class = None
+
+        for frame_id, pred in track_info.items():
+            current_class = pred.class_name
+            if prev_class is not None and prev_class != current_class:
+                self.anomalies[object_id].append(frame_id)
+                break
+
+            prev_class = current_class
+
+        return None
 
     def is_object_missing_in_frames(
         self, object_id: str, track_info: dict
