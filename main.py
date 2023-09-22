@@ -84,7 +84,8 @@ def parse_args():
 
 
 def main(args):
-    logger.add(os.path.join(args.out_folder, f"{get_runtime_str()}.log"))
+    runtime_str = get_runtime_str()
+    logger.add(os.path.join(args.out_folder, f"{runtime_str}.log"))
 
     model = YOLO("yolov8n.pt")
     deep_sort_tracker = DeepSort(max_age=args.max_age)
@@ -92,7 +93,7 @@ def main(args):
     tframe_collection = run_detection_and_tracking_pipeline(
         model, deep_sort_tracker, args
     )
-    TemporalAnomalyDetector(tframe_collection)
+    TemporalAnomalyDetector(tframe_collection, runtime_str)
 
 
 if __name__ == "__main__":
