@@ -7,6 +7,7 @@ Intersection-over-Union (IoU) values. Detected anomalies are stored in a diction
 import os
 import sys
 from collections import defaultdict
+
 import cv2
 from loguru import logger
 

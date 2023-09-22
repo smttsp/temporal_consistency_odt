@@ -42,11 +42,11 @@ def transform_detection_predictions(data: list) -> list:
             [ltwh, confidence, class_id].
     """
 
-    confidence = data[4]
-
     x_min, y_min, x_max, y_max = map(int, data[:4])
     ltwh = [x_min, y_min, x_max - x_min, y_max - y_min]
+    confidence = data[4]
     class_id = int(data[5])
+
     res = [ltwh, confidence, class_id]
     return res
 
@@ -172,18 +172,6 @@ def process_single_frame(
     draw_fps_on_frame(frame_after, total_time)
 
     return frame_after
-
-
-# def apply_detection_and_tracking(
-#     model,
-#     deep_sort_tracker,
-#     num_aug,
-#     video_cap,
-#     writer,
-#     out_folder,
-#     out_video_fps,
-#     confidence_threshold,
-# ):
 
 
 def apply_detection_and_tracking(
