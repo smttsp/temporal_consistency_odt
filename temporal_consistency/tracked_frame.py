@@ -44,7 +44,7 @@ class Prediction:
         self.class_name = class_names.get(class_id, None)
 
     def to_str_all(self):
-        confidence = round(self.confidence, 4)
+        confidence = round(self.confidence, 4) if self.confidence else None
         bbox = " ".join(map(str, self.ltrb))
         return (
             f"{self.frame_id=}, {self.class_id=}, {self.class_name=}, "
@@ -52,8 +52,9 @@ class Prediction:
         )
 
     def to_str(self):
+        confidence = round(self.confidence, 4) if self.confidence else None
         bbox = " ".join(map(str, self.ltrb))
-        return f"{self.class_name}, {bbox}, {round(self.confidence, 4)}"
+        return f"{self.class_name}, {bbox}, {round(confidence, 4)}"
 
 
 class TrackedFrame:
