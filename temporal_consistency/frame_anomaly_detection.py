@@ -13,6 +13,7 @@ from loguru import logger
 
 from temporal_consistency.tracked_frame import TrackedFrameCollection
 from temporal_consistency.utils import compute_iou
+from temporal_consistency.vis_utils import draw_class_name
 
 
 MIN_IOU_THRESH = 0.5
@@ -28,51 +29,22 @@ def export_list_of_objects(object_filepath, object_list):
 class TemporalAnomalyDetector:
     """Detects anomalies in the temporal consistency of the tracked objects."""
 
-    def __init__(self, tframe_collection: TrackedFrameCollection):
+    def __init__(
+        self, tframe_collection: TrackedFrameCollection, runtime_str: str
+    ):
         """Initializes the TemporalAnomalyDetector.
 
         Args:
             tframe_collection (TrackedFrameCollection): A collection of frames
                 containing tracked objects.
+            runtime_str (str): A string containing the datetime information.
         """
 
         self.tframe_collection = tframe_collection
+        self.runtime_str = runtime_str
         self.anomalies = defaultdict(list)
         self.scan_for_anomalies()
         self.export_anomalies()
-
-    def export_anomalies(self):
-        """Exports the frames where there is an anomaly for at least one object.
-        The exported files are:
-        1. Raw frame as frame{frame_id}.jpg
-        2. Frame with bboxes as frame{frame_id}_bbox.jpg. The green bboxes are the
-            tracked objects, and the red bboxes are the low-confidence detections.
-        3. a file containing all the bboxes in the frame as frame{frame_id}_bbox.txt
-
-        1 + 3 can be used to help with labeling the data (i.e. model assisted labeling)
-        """
-
-        frame_ids = set(x[0] for x in self.anomalies.values())
-
-        out_folder = self.tframe_collection.out_folder
-        os.makedirs(out_folder, exist_ok=True)
-
-        for frame_id in frame_ids:
-            # 1. Raw frame
-            frame = self.tframe_collection.get_frame(frame_id)
-            frame_filepath = os.path.join(out_folder, f"frame{frame_id}.jpg")
-            cv2.imwrite(frame_filepath, frame)
-
-            # 2. Frame with bboxes
-            (
-                high_conf_objects,
-                low_conf_objects,
-            ) = self.tframe_collection.get_frame_predictions(frame_id)
-
-            # 3. Bboxes as txt
-            object_filepath = frame_filepath.replace(".jpg", ".txt")
-            export_list_of_objects(object_filepath, low_conf_objects)
-            export_list_of_objects(object_filepath, high_conf_objects)
 
     def scan_for_anomalies(self):
         """Scans for anomalies across all objects in the frame collection."""
@@ -208,3 +180,51 @@ class TemporalAnomalyDetector:
                 flag = True
 
         return flag
+
+    def export_anomalies(self):
+        """Exports the frames where there is an anomaly for at least one object.
+        The exported files are:
+        1. Raw frame as frame{frame_id}.jpg
+        2. Frame with bboxes as frame{frame_id}_bbox.jpg. The green bboxes are the
+            tracked objects, and the red bboxes are the low-confidence detections.
+        3. a file containing all the bboxes in the frame as frame{frame_id}_bbox.txt
+
+        1 + 3 can be used to help with labeling the data (i.e. model assisted labeling)
+        """
+
+        frame_ids = set(x[0] for x in self.anomalies.values())
+
+        out_folder = os.path.join(
+            self.tframe_collection.out_folder, self.runtime_str
+        )
+        os.makedirs(out_folder, exist_ok=True)
+
+        for frame_id in frame_ids:
+            frame_filepath = os.path.join(out_folder, f"frame{frame_id}.jpg")
+            object_filepath = frame_filepath.replace(".jpg", "_bbox.txt")
+            frame_wbbox_filepath = frame_filepath.replace(".jpg", "_bbox.jpg")
+
+            # 1. Raw frame
+            frame = self.tframe_collection.get_frame(frame_id)
+
+            cv2.imwrite(frame_filepath, frame)
+
+            # 2. Frame with bboxes
+            (
+                high_conf_objects,
+                low_conf_objects,
+            ) = self.tframe_collection.get_frame_predictions(frame_id)
+            export_list_of_objects(object_filepath, high_conf_objects)
+            export_list_of_objects(object_filepath, low_conf_objects)
+
+            # 3. Bboxes as txt
+            for obj in high_conf_objects:
+                draw_class_name(frame, obj.ltrb, "", obj.class_name)
+
+            for obj in low_conf_objects:
+                draw_class_name(
+                    frame, obj.ltrb, "", obj.class_name, bbox_color=(0, 0, 255)
+                )
+            cv2.imwrite(frame_wbbox_filepath, frame)
+
+        return None
