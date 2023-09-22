@@ -70,3 +70,8 @@ minversion = "6.1"
 addopts = ["--cov=temporal_consistency", "--cov-report=term-missing", "--cov"]
 testpaths = ["tests_unit"]
 filterwarnings = "ignore::DeprecationWarning"
+
+[tool.mypy]
+python_version = 3.11
+warn_unused_configs = true
+ignore_missing_imports = true
